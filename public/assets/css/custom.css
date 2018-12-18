@@ -1,0 +1,12 @@
+/*
+###############
+## Custom CSS
+###############
+*/
+
+.panel-tools .btn-link {
+  color: #a47441;
+  font-size: 18px;
+	line-height: 1.3;
+	padding: 0 5px;
+}
