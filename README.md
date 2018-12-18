@@ -3,6 +3,7 @@
 Step-1: Install ACL Package
 ---------------------------------------
 >> composer require spatie/laravel-permission
+
 Step-2: Add the service provider in config/app.php file
 --------------------------------------------------------
 'providers' => [
