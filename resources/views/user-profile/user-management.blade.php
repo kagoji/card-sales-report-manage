@@ -38,16 +38,17 @@
                             Create User
                         </a>
                     </li>
-                    <li class="{{($tab=='blocked_user') ? 'active' : ''}}">
-                        <a data-toggle="tab" href="#blocked_user">
-                            Blocked Users
-                        </a>
-                    </li>
                     <li class="{{$tab=='admins' ? 'active':''}}">
                         <a data-toggle="tab" href="#admins">
                             Admins
                         </a>
                     </li>
+                    <li class="{{($tab=='blocked_user') ? 'active' : ''}}">
+                        <a data-toggle="tab" href="#blocked_user">
+                            Blocked Users
+                        </a>
+                    </li>
+
                 </ul>
                 <div class="tab-content">
                     <!-- PANEL FOR CREATE USER -->
@@ -56,6 +57,7 @@
                             <div class="col-md-12">
                                 <form id="user-form"  action="{{url('/user/create')}}" method="post"
                                        enctype="multipart/form-data" class="user-form">
+                                    <input type="hidden" name="_token" value="{{csrf_token()}}">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <h3>Account Info</h3>
@@ -88,19 +90,9 @@
                                             <div class="form-group">
                                                 <label class="control-label">
                                                     User Type
-                                                    <span class="symbol" aria-required="true"></span>
-                                                </label>
-                                                <select class="form-control search-select" name="user_type">
-                                                    <option value="" selected="selected"> Please select user type</option>
-
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="control-label">
-                                                    User Role
                                                     <span class="symbol required" aria-required="true"></span>
                                                 </label>
-                                                <select class="form-control search-select" name="user_role" >
+                                                <select class="form-control search-select" name="user_type" >
                                                     <option value="" selected="selected">Please select user role</option>
                                                     <option value="admin"> Admin </option>
                                                     <option value="official_user"> Official </option>
@@ -157,13 +149,26 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <p>
-                                                By clicking Register, you are agreeing to the Policy and Terms &amp; Conditions.
-                                            </p>
+                                            <div class="form-group">
+                                                <label> Access Permission </label>
+                                            </div>
+                                            <div class="checkbox">
+                                                <label class="">
+                                                    <input type="checkbox" name="select_all_box" id="select_all_box" value="all"> All
+                                                </label>
+                                            </div>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" name="route_name_1" id="inlineCheckbox1" value="option1"> 1
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" id="inlineCheckbox2" value="option2"> 2
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
+                                            </label>
                                         </div>
-                                        <div class="col-md-6">
-                                            <input type="hidden" name="_token" value="{{csrf_token()}}">
-                                            <button class="btn btn-teal btn-block" type="submit">
+                                        <div class="col-md-4 pull-right">
+                                            <button class="btn btn-teal btn-block " type="submit">
                                                 Register <i class="fa fa-arrow-circle-right"></i>
                                             </button>
                                         </div>

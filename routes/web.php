@@ -10,72 +10,108 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-/*################
-    # Basic Auth
-    ##################*/
+
 Route::get('/',array('as'=>'Sign in', 'uses' =>'SystemAuthController@authLogin'));
 Route::get('/auth',array('as'=>'Sign in', 'uses' =>'SystemAuthController@authLogin'));
 Route::post('/auth',array('as'=>'Sign in' , 'uses' =>'SystemAuthController@authPostLogin'));
 Route::post('auth/registration',array('as'=>'Registration' , 'uses' =>'SystemAuthController@authRegistration'));
 Route::post('auth/forget/password',array('as'=>'Forgot Password' , 'uses' =>'SystemAuthController@authForgotPasswordConfirm'));
-Route::get('auth/set/new/password/{user_id}/verify',array('as'=>'Forgot Password Verify' , 'uses' =>'SystemAuthController@authSystemForgotPasswordVerification'));
-Route::post('auth/post/new/password/',array('as'=>'New Password Submit' , 'uses' =>'SystemAuthController@authSystemNewPasswordPost'));
-Route::get('auth/me/logout/{email}',array('as'=>'Logout' , 'uses' =>'SystemAuthController@authLogout'));
 
 
-/*################
-# Profile
-##################*/
-//profile
-Route::get('/me/profile',array('as'=>'Profile' , 'uses' =>'AdminController@Profile'));
-Route::post('/me/profile/update',array('as'=>'Profile Update' , 'uses' =>'AdminController@ProfileUpdate'));
-Route::post('/me/profile/image/update',array('as'=>'Profile Image Update' , 'uses' =>'AdminController@ProfileImageUpdate'));
-Route::post('/me/change/password',array('as'=>'User Change Password' , 'uses' =>'AdminController@UserChangePassword'));
-#UserManagement
-Route::get('/user/management',array('as'=>'User Management' , 'uses' =>'AdminController@UserManagement'));
-#CreateUser
-Route::post('/user/create',array('as'=>'Create User' , 'uses' =>'AdminController@CreateUser'));
-#ChangeUserStatus
-Route::get('/change/user/status/{user_id}/{status}',array('as'=>'Change User Status' , 'uses' =>'AdminController@changeUserStatus'));
+Route::group(['middleware' => ['systemAuth_check']], function () {
+
+    /*################
+    # Basic Auth
+    ##################*/
 
 
-/*################
-# ACL Settings
-##################*/
+    Route::get('auth/set/new/password/{user_id}/verify',array('as'=>'Forgot Password Verify' , 'uses' =>'SystemAuthController@authSystemForgotPasswordVerification'));
+    Route::post('auth/post/new/password/',array('as'=>'New Password Submit' , 'uses' =>'SystemAuthController@authSystemNewPasswordPost'));
+    Route::get('auth/me/logout/{email}',array('as'=>'Logout' , 'uses' =>'SystemAuthController@authLogout'));
 
-Route::get('/acl-settings',array('as'=>'ACL Settings' , 'uses' =>'AclController@AclSettingsPage'));
-
-#RoleType
-Route::get('/role-type/create',array('as'=>'Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
-Route::post('/role-type/create',array('as'=>'Role Type Create' , 'uses' =>'AclController@RoleTypeInsert'));
-Route::get('/role-type/list',array('as'=>'Role Type List' , 'uses' =>'AclController@ListRoleType'));
-
-#PermissionType
-Route::get('/permission-type/create',array('as'=>'Permission Type Create' , 'uses' =>'AclController@CreatePermissionType'));
-Route::post('/permission-type/create',array('as'=>'Permission Type Create' , 'uses' =>'AclController@PermissionTypeInsert'));
-Route::get('/permission-type/list',array('as'=>'Permission Type List' , 'uses' =>'AclController@ListPermissionType'));
-
-
-/*################
-# Dashboard
-##################*/
-
-Route::get('/dashboard',array('as'=>'Dashboard' , 'uses' =>'AdminController@DashboardPage'));
-
-/*################
-# Sales
-##################*/
-
-Route::group(['middleware' => ['acl_check']], function () {
-    Route::group(['prefix' => 'sales'], function () {
-
-        Route::get('report',array('as'=>'Sales Dashboard' , 'uses' =>'AdminController@DashboardPage'));
-        Route::get('/role-type/create',array('as'=>'sales Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
-        Route::get('report2',array('as'=>'Sales Dashboard 22' , 'uses' =>'AdminController@DashboardPage'));
+    /*################
+    # Profile
+    ##################*/
+    //profile
+    Route::get('/me/profile',array('as'=>'Profile' , 'uses' =>'AdminController@Profile'));
+    Route::post('/me/profile/update',array('as'=>'Profile Update' , 'uses' =>'AdminController@ProfileUpdate'));
+    Route::post('/me/profile/image/update',array('as'=>'Profile Image Update' , 'uses' =>'AdminController@ProfileImageUpdate'));
+    Route::post('/me/change/password',array('as'=>'User Change Password' , 'uses' =>'AdminController@UserChangePassword'));
+    #UserManagement
+    Route::get('/user/management',array('as'=>'User Management' , 'uses' =>'AdminController@UserManagement'));
+    #CreateUser
+    Route::post('/user/create',array('as'=>'Create User' , 'uses' =>'AdminController@CreateUser'));
+    #ChangeUserStatus
+    Route::get('/change/user/status/{user_id}/{status}',array('as'=>'Change User Status' , 'uses' =>'AdminController@changeUserStatus'));
 
 
+    /*################
+    # ACL Settings
+    ##################*/
+
+    Route::get('/acl-settings',array('as'=>'ACL Settings' , 'uses' =>'AclController@AclSettingsPage'));
+
+    #RoleType
+    Route::get('/role-type/create',array('as'=>'Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
+    Route::post('/role-type/create',array('as'=>'Role Type Create' , 'uses' =>'AclController@RoleTypeInsert'));
+    Route::get('/role-type/list',array('as'=>'Role Type List' , 'uses' =>'AclController@ListRoleType'));
+
+    #PermissionType
+    Route::get('/permission-type/create',array('as'=>'Permission Type Create' , 'uses' =>'AclController@CreatePermissionType'));
+    Route::post('/permission-type/create',array('as'=>'Permission Type Create' , 'uses' =>'AclController@PermissionTypeInsert'));
+    Route::get('/permission-type/list',array('as'=>'Permission Type List' , 'uses' =>'AclController@ListPermissionType'));
+
+
+    /*################
+    # Dashboard
+    ##################*/
+
+    Route::get('/dashboard',array('as'=>'Dashboard' , 'uses' =>'AdminController@DashboardPage'));
+
+    /*################
+    # Sales
+    ##################*/
+
+    Route::group(['middleware' => ['acl_check']], function () {
+        Route::group(['prefix' => 'sales'], function () {
+
+            Route::get('report',array('as'=>'Sales Dashboard' , 'uses' =>'AdminController@DashboardPage'));
+
+            #SalesCommission
+            Route::get('/settings-commission',array('as'=>'Sales Settings Commission' , 'uses' =>'SalesSettingsController@CommissionSettingsPage'));
+            Route::post('/settings-commission',array('as'=>'Sales Settings Commission' , 'uses' =>'SalesSettingsController@CommissionSettingsChangeRequest'));
+            Route::get('/settings-commission/ajax/view',array('as'=>'Sales Settings Commission Ajax' , 'uses' =>'SalesSettingsController@CommissionSettingsAjaxLoad'));
+
+            #SalesConfig
+            Route::get('/settings-config-sales',array('as'=>'Sales Config Settings' , 'uses' =>'SalesSettingsController@SalesConfigSettingsPage'));
+            Route::post('/settings-config-sales',array('as'=>'Sales Config Settings' , 'uses' =>'SalesSettingsController@SalesConfigSettingsChangeRequest'));
+            Route::get('/settings-config-sales/ajax/view',array('as'=>'Sales Config Settings Ajax' , 'uses' =>'SalesSettingsController@SalesConfigSettingsAjaxLoad'));
+
+
+            #SalesZone
+            Route::get('/settings-zone',array('as'=>'Sales Zone Settings' , 'uses' =>'SalesSettingsController@SalesZoneSettingsPage'));
+            Route::post('/settings-zone',array('as'=>'Sales Zone Settings' , 'uses' =>'SalesSettingsController@SalesZoneSettingsChangeRequest'));
+            Route::get('/settings-zone/ajax/view',array('as'=>'Sales Zone Settings Ajax' , 'uses' =>'SalesSettingsController@SalesZoneSettingsAjaxLoad'));
+
+
+            #SalesConfig
+            Route::get('/settings-person-sales',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsPage'));
+            Route::post('/settings-person-sales',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsChangeRequest'));
+            Route::get('/settings-person-sales/ajax/view',array('as'=>'Sales Person Settings Ajax' , 'uses' =>'SalesSettingsController@SalesPersonSettingsAjaxLoad'));
+
+
+
+            Route::get('/role-type/create',array('as'=>'sales Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
+            Route::get('report2',array('as'=>'Sales Dashboard 22' , 'uses' =>'AdminController@DashboardPage'));
+
+        });
     });
+
+
 });
+
+
+
 
 
 use Spatie\Permission\Models\Role;

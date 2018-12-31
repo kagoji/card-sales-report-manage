@@ -123,6 +123,7 @@
 <script type="text/javascript" src="{{asset('assets/plugins/DataTables/media/js/DT_bootstrap.js')}}"></script>
 <script src="{{asset('assets/js/table-data.js')}}"></script>
 
+
 <script src="{{ asset('assets/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/blockUI/jquery.blockUI.js') }}"></script>
 <script src="{{ asset('assets/plugins/iCheck/jquery.icheck.min.js') }}"></script>
@@ -161,9 +162,10 @@
 <script src="{{ asset('assets/plugins/ckeditor/adapters/jquery.js') }}"></script>
 <script src="{{ asset('assets/js/form-elements.js') }}"></script>
 <script src="{{ asset('assets/js/jquery.jgrowl.min.js') }}"></script>
-<script src="{{ asset('assets/js/bootbox.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/bootbox/bootbox.min.js') }}"></script>
 <script src="{{ asset('assets/js/jquery-sortable-min.js') }}"></script>
 <script src="{{ asset('assets/js/underscore.js')}}"></script>
+<script src="{{ asset('assets/js/sales.js')}}"></script>
 <script>
     jQuery(document).ready(function() {
         Main.init();

@@ -1,11 +1,11 @@
 <div class="main-navigation navbar-collapse collapse">
     <!-- start: MAIN MENU TOGGLER BUTTON -->
-    @if(\Auth::user()->user_role=="admin")
+
         <div class="navigation-toggler">
             <i class="clip-chevron-left"></i>
             <i class="clip-chevron-right"></i>
         </div>
-    @endif
+
 <!-- end: MAIN MENU TOGGLER BUTTON -->
     <!-- start: MAIN NAVIGATION MENU -->
     <ul class="main-navigation-menu">
@@ -27,6 +27,45 @@
                     <span class="selected"></span>
                 </a>
             </li>
+
+
+
+            <li class="{{(isset($page_title) && ((strpos($page_title,'Settings')!== false ) && (strpos($page_title,'Sales')!== false ))) ? 'active' : ''}}">
+                <a href="javascript:void (0)">
+                    <i class="fa fa-mail-forward" aria-hidden="true"></i>
+                    <span class="title">Sales Settings</span><i class="icon-arrow"></i>
+                    <span class="selected"></span>
+                </a>
+                <ul class="sub-menu" style="display: {{( isset($page_title) && ((strpos($page_title,'Settings')!== false ) && (strpos($page_title,'Sales')!== false ))) ? 'block':'active'}};">
+                    <li class="{{isset($page_title) && ($page_title=='Sales Settings Commission') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/settings-commission')}}">
+                            <span class="title"> Commission Settings </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
+                    <li class="{{isset($page_title) && ($page_title=='Sales Config Settings') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/settings-config-sales')}}">
+                            <span class="title"> Sales Config Settings </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
+
+                    <li class="{{isset($page_title) && ($page_title=='Sales Zone Settings') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/settings-zone')}}">
+                            <span class="title"> Sales Zone Settings </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
+                    <li class="{{isset($page_title) && ($page_title=='Sales Person Settings') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/settings-person-sales')}}">
+                            <span class="title"> Sales Person Settings </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
             <li class="{{isset($page_title) && ($page_title=='User Management') ? 'active' : ''}} ">
                 <a href="javascript:void(0)"><i class="clip-user-plus"></i>
                     <span class="title"> User Management </span><i class="icon-arrow"></i>

@@ -30,11 +30,11 @@ class AdminController extends Controller
 
     public function DashboardPage(){
 
-        var_dump(\Auth::user()->can($this->page_title));
+        //var_dump(\Auth::user()->can($this->page_title));
 
 
-        /*$data['page_title'] = $this->page_title;
-        return view('pages.dashboard', $data);*/
+        $data['page_title'] = $this->page_title;
+        return view('pages.dashboard', $data);
     }
     /**
      * Display profile information
@@ -191,7 +191,7 @@ class AdminController extends Controller
     public function UserManagement()
     {
 
-            /*$data['page_title'] = $this->page_title;
+            $data['page_title'] = $this->page_title;
             if (isset($_REQUEST['tab']) && !empty($_REQUEST['tab'])) {
                 $tab = $_REQUEST['tab'];
             } else {
@@ -200,12 +200,13 @@ class AdminController extends Controller
             $data['tab'] = $tab;
             $data['user_info'] = \DB::table('users')->get();
             $data['block_users'] = \DB::table('users')->where('status','deactivate')->get();
-            $data['admins'] = \DB::table('users')->where('user_type','admin')->get();
-            return view('user-profile.user-management',$data);*/
+            $data['permission_list'] = Permission::all();
+            $data['route_list'] = \App\System::GetAllRouteNameListWithPrefix('sales');
 
+            //var_dump($data['route_list']);
 
-
-            var_dump();
+            //$data['admins'] = \DB::table('users')->where('user_type','admin')->get();
+            return view('user-profile.user-management',$data);
     }
     /**
      * Creating new User
