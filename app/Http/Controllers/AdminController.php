@@ -295,6 +295,23 @@ class AdminController extends Controller
         }
     }
 
+    /**********************************************************
+    ## TaskQueueView
+     *************************************************************/
+
+    public function TaskQueueView()
+    {
+        $task_list = \App\TaskQueue::OrderBy('created_at','desc')->paginate(10);
+        $task_list->setPath(url('/task-queue/view'));
+        $task_list_pagination = $task_list->render();
+        $data['pagination']= $task_list_pagination;
+        $data['perPage'] = $task_list->perPage();
+        $data['task_list']= $task_list;
+
+        $data['page_title'] = $this->page_title;
+        return \View::make('task.task-queue-view',$data);
+    }
+
     /********************************************
      * ## DndAddRequest
      *********************************************/

@@ -62,6 +62,12 @@
                             <span class="selected"></span>
                         </a>
                     </li>
+                    <li class="{{isset($page_title) && ($page_title=='Sales CSV Upload Settings') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/settings-csv-sales')}}">
+                            <span class="title"> Sales CSV Upload </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 

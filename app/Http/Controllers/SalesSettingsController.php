@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\TaskQueue;
 use Illuminate\Http\Request;
+use App\Events\SalesPersonListEvent;
+use App\Events\CommissionListEvent;
+use App\Events\SalesTransactionEvent;
 
 class SalesSettingsController extends Controller
 {
@@ -67,7 +71,6 @@ class SalesSettingsController extends Controller
         $v = $request->validate([
             'cmm_prd_grp' => 'required',
             'cmm_name' => 'required',
-            'cmm_prd_grp_type_name' => 'required',
             'cmm_amount' => 'required|numeric',
             'action' => 'required',
         ]);
@@ -76,7 +79,6 @@ class SalesSettingsController extends Controller
         try{
             $commission['cmm_prd_grp'] = $request->input('cmm_prd_grp');
             $commission['cmm_name'] = $request->input('cmm_name');
-            $commission['cmm_prd_grp_type_name'] = $request->input('cmm_prd_grp_type_name');
             $commission['cmm_amount'] = $request->input('cmm_amount');
             if($request->input('action')=='add'){
 
@@ -362,8 +364,6 @@ class SalesSettingsController extends Controller
             $sales_persons_zone_name = (isset($zone_info->zone_name) && !empty($zone_info->zone_name))?$person['sales_persons_zone_name']=$zone_info->zone_name:'';
 
 
-            var_dump($person);
-
             if($request->input('action')=='add'){
 
                 $insert = \App\SalesPerson::firstOrCreate(['salesExecutiveCode'=>$person['salesExecutiveCode']],$person);
@@ -384,6 +384,91 @@ class SalesSettingsController extends Controller
             $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
             \App\System::ErrorLogWrite($message);
             return redirect('/sales/settings-person-sales')->with('errormessage',"Something is wrong!");
+        }
+    }
+
+    /**********************************************************
+    ## SalesCsvUploadPage
+     *************************************************************/
+
+    public function SalesCsvUploadPage()
+    {
+        $data['page_title'] = $this->page_title;
+        return \View::make('sales-settings.sales-csv-upload',$data);
+    }
+
+    /**********************************************************
+    ## SalesCsvUploadSubmit
+     *************************************************************/
+
+    public function SalesCsvUploadSubmit(Request $request)
+    {
+        $v = $request->validate([
+            'upload_type' => 'required',
+            'csv_file' => 'required|mimes:csv,txt',
+        ]);
+
+
+        try{
+            $csvfile = $request->file('csv_file');
+            $csv_location = $csvfile->getRealPath();
+            $csv_ext = $csvfile->getClientOriginalExtension();
+
+            $csv_data = \App\User::readerCSV($csv_location);
+            $csv_proess_data = \App\User::csvdataprocess($csv_data);
+
+            #Taskinfo
+            $task['task_user_id']= \Auth::user()->id;
+            $task['task_user_name']= \Auth::user()->name;
+            $task['task_status']= 1;
+
+            if($request->input('upload_type')=='sales_person'){
+
+
+
+                #TaskQueue
+                $task['task_name']= 'Sales Person List Import';
+                $task['task_start_at'] = date('Y-m-d H:i:s');
+                $task_id = \App\TaskQueue::insertGetId($task);
+
+
+                #EventData
+                $event_data['task_info'] = $task;
+                $event_data['data'] = $csv_proess_data;
+                \Event::fire(new SalesPersonListEvent($event_data));
+                $redirect_message = "Please Check Task Status . Current Status is Running";
+
+            }elseif ($request->input('upload_type')=='commission_list'){
+                $task['task_name']= 'Commission List Import';
+                #EventData
+                $event_data['task_info'] = $task;
+                $event_data['data'] = $csv_proess_data;
+                \Event::fire(new CommissionListEvent($event_data));
+                $redirect_message = "Please Check Task Status of Commission List . Current Status is Running";
+
+            }elseif ($request->input('upload_type')=='sales_transaction_report'){
+
+                $task['task_name']= 'Sales Transaction Import';
+                #EventData
+                $event_data['task_info'] = $task;
+                $event_data['data'] = $csv_proess_data;
+                \Event::fire(new SalesTransactionEvent($event_data));
+                $redirect_message = "Please Check Task Status of Commission List . Current Status is Running";
+
+            }else{
+                $redirect_message = "Invalid Upload Rerquest";
+                return redirect('/sales/settings-csv-sales')->with('errormessage',$redirect_message);
+            }
+
+
+
+            return redirect('/task-queue/view')->with('message',$redirect_message);
+
+
+        }catch (\Exception $e) {
+            $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
+            \App\System::ErrorLogWrite($message);
+            return redirect('/sales/settings-csv-sales')->with('errormessage',"Something is wrong!");
         }
     }
 }

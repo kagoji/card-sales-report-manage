@@ -62,6 +62,10 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
     Route::get('/permission-type/list',array('as'=>'Permission Type List' , 'uses' =>'AclController@ListPermissionType'));
 
 
+    #TaskQueue
+    Route::get('/task-queue/view',array('as'=>'Task Queue View' , 'uses' =>'AdminController@TaskQueueView'));
+
+
     /*################
     # Dashboard
     ##################*/
@@ -99,6 +103,10 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
             Route::post('/settings-person-sales',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsChangeRequest'));
             Route::get('/settings-person-sales/ajax/view',array('as'=>'Sales Person Settings Ajax' , 'uses' =>'SalesSettingsController@SalesPersonSettingsAjaxLoad'));
 
+            
+            #CSV Upload
+            Route::get('/settings-csv-sales',array('as'=>'Sales CSV Upload Settings' , 'uses' =>'SalesSettingsController@SalesCsvUploadPage'));
+            Route::post('/settings-csv-sales',array('as'=>'Sales CSV Upload Settings' , 'uses' =>'SalesSettingsController@SalesCsvUploadSubmit'));
 
 
             Route::get('/role-type/create',array('as'=>'sales Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
@@ -204,7 +212,9 @@ Route::get('/acl-check',function(){
     $user->assignRole('root');
     $user->givePermissionTo(Permission::all());*/
 
-    var_dump(Permission::all());
+    //var_dump(Permission::all());
+
+    echo \Hash::make('1234');
 
 
 });

@@ -27,20 +27,6 @@
             </div>
             <div class="form-group col-md-12">
                 <label class="col-sm-5 control-label">
-                    <strong>Commission Name</strong>
-                    <span class="symbol required" aria-required="true"></span>
-                </label>
-                <div class="col-sm-5">
-                    <select class="form-control" name="cmm_prd_grp_type_name">
-                        <option value="Basic Card"  >Basic Card</option>
-                        <option value="Supplementary Card" Supplementary Card</option>
-                        <option value="Travel Card" >Travel Card</option>
-                        <option value="Virtual Card" >Virtual Card</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group col-md-12">
-                <label class="col-sm-5 control-label">
                     <strong>Commission Amount</strong>
                     <span class="symbol required" aria-required="true"></span>
                 </label>
@@ -85,20 +71,6 @@
                     </label>
                     <div class="col-sm-5">
                         <input type="text" class="form-control" value="{{isset($commission_info->cmm_name)?$commission_info->cmm_name:''}}" name="cmm_name">
-                    </div>
-                </div>
-                <div class="form-group col-md-12">
-                    <label class="col-sm-5 control-label">
-                        <strong>Commission Name</strong>
-                        <span class="symbol required" aria-required="true"></span>
-                    </label>
-                    <div class="col-sm-5">
-                        <select class="form-control" name="cmm_prd_grp_type_name">
-                            <option value="Basic Card" {{isset($commission_info->cmm_prd_grp_type_name) && ($commission_info->cmm_prd_grp_type_name=='Basic Card')?'selected':''}} >Basic Card</option>
-                            <option value="Supplementary Card" {{isset($commission_info->cmm_prd_grp_type_name) && ($commission_info->cmm_prd_grp_type_name=='Supplementary Card')?'selected':''}}>Supplementary Card</option>
-                            <option value="Travel Card" {{isset($commission_info->cmm_prd_grp_type_name) && ($commission_info->cmm_prd_grp_type_name=='Travel Card')?'selected':''}}>Travel Card</option>
-                            <option value="Virtual Card" {{isset($commission_info->cmm_prd_grp_type_name) && ($commission_info->cmm_prd_grp_type_name=='Virtual Card')?'selected':''}}>Virtual Card</option>
-                        </select>
                     </div>
                 </div>
                 <div class="form-group col-md-12">

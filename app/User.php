@@ -84,4 +84,41 @@ class User extends Authenticatable
         return $path;
     }
 
+
+    /*******************************
+    ### readerCSV
+     *******************************/
+    public static function readerCSV($csvFile){
+
+        $file_handle = fopen($csvFile, 'r');
+        while (!feof($file_handle) ) {
+            $line_of_text[] = fgetcsv($file_handle, 1024);
+        }
+        fclose($file_handle);
+        return $line_of_text;
+    }
+
+
+
+
+    /*******************************
+    ### csvdataprocess
+     *******************************/
+    public static function csvdataprocess($all_data){
+        $embeded = array();
+
+        for($i=1;$i<count($all_data);$i++){
+            for ($j=0; $j <count($all_data[0]) ; $j++) {
+
+                $k =$all_data[0][$j];
+
+                if(!empty($all_data[$i][$j]))
+                    $embeded[$i][$k] = $all_data[$i][$j];
+
+            }
+        }
+
+        return $embeded;
+    }
+
 }
