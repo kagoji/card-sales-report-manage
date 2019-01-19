@@ -30,6 +30,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\SalesTransactionEvent' => [
             'App\Listeners\SalesTransactionEventListener',
         ],
+        'App\Events\SummaryReportGenerateEvent' => [
+            'App\Listeners\SummaryReportGenerateEventListener',
+        ],
     ];
 
     /**

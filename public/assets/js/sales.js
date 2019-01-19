@@ -118,3 +118,34 @@ jQuery(function(){
     });
 
 });
+
+
+/*##########################################
+# Report History Modal
+############################################
+*/
+
+jQuery(function(){
+
+
+    jQuery(".report_history").on('click', function(event) {
+        var action = jQuery(this).data('action');
+        var site_url = jQuery('.site_url').val();
+        var request_url = site_url+'/report-history/ajax/view?action='+action;
+
+        if(action=='edit'){
+            var history_id = jQuery(this).data('history_id');
+            request_url = site_url+'/report-history/ajax/view?action='+action+'&history_id='+history_id;
+        }
+
+        jQuery.ajax({
+            url: request_url,
+            type: "get",
+            success:function(data){
+                jQuery('.modal-body').html(data);
+                jQuery("#report_history").modal();
+            }
+        });
+    });
+
+});

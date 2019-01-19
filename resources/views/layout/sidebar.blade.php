@@ -29,7 +29,19 @@
             </li>
 
 
+            <li class="{{isset($page_title) && ($page_title=='Task Queue View') ? 'active' : ''}} ">
+                <a href="{{url('/task-queue/view')}}"><i class="clip-user-2"></i>
+                    <span class="title">Task Queue</span>
+                    <span class="selected"></span>
+                </a>
+            </li>
 
+            <li class="{{isset($page_title) && ($page_title=='Report History View') ? 'active' : ''}} ">
+                <a href="{{url('/report-history/view')}}"><i class="clip-user-2"></i>
+                    <span class="title">Report History</span>
+                    <span class="selected"></span>
+                </a>
+            </li>
             <li class="{{(isset($page_title) && ((strpos($page_title,'Settings')!== false ) && (strpos($page_title,'Sales')!== false ))) ? 'active' : ''}}">
                 <a href="javascript:void (0)">
                     <i class="fa fa-mail-forward" aria-hidden="true"></i>

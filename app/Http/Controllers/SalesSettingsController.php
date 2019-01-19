@@ -429,7 +429,6 @@ class SalesSettingsController extends Controller
                 #TaskQueue
                 $task['task_name']= 'Sales Person List Import';
                 $task['task_start_at'] = date('Y-m-d H:i:s');
-                $task_id = \App\TaskQueue::insertGetId($task);
 
 
                 #EventData
