@@ -6,7 +6,7 @@ use App\Events\SummaryReportGenerateEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SummaryReportGenerateEventListener
+class SummaryReportGenerateEventListener implements ShouldQueue
 {
     /**
      * Create the event listener.

@@ -146,4 +146,97 @@ class SalesReportController extends Controller
         }
     }
 
+    /**********************************************************
+    ## SalesZoneSummaryReportView
+     *************************************************************/
+    public function SalesZoneSummaryReportView()
+    {
+        if(isset($_GET['history_year']) && !empty($_GET['history_year']) && isset($_GET['history_month']) && !empty($_GET['history_month']) && isset($_GET['sales_zone']) && !empty($_GET['sales_zone'])){
+
+            $history_year = $_GET['history_year'];
+            $history_month = $_GET['history_month'];
+            $sales_zone = $_GET['sales_zone'];
+
+            $data['zone_info'] = \App\SalesZone::where('id',$sales_zone)->first();
+
+            $zone_summery_list = \App\SalesSummary::where('report_year',$history_year)->where('report_month',$history_month)->where('report_zone_id',$sales_zone)->orderByRaw("FIELD(report_DesigCode,'GL','DGL','DSE','TSE'),report_dateOfjoining  ASC")->get();
+
+            /*$zone_summery_list->setPath(url('/sales/manage-reports/zone-summary'));
+
+            $stock_summery_pagination = $zone_summery_list->appends(['history_year' => $history_year, 'history_month'=> $history_month,'sales_zone'=>$sales_zone])->render();
+
+            $data['pagination'] = $stock_summery_pagination;
+            $data['perPage'] = $zone_summery_list->perPage();*/
+            $data['zone_summery_list'] = $zone_summery_list;
+
+        }
+
+        $data['page_title'] = $this->page_title;
+        $data['sales_zone_list'] = \App\SalesZone::all();
+        return \View::make('summary-reports.zone-summary-view',$data);
+    }
+
+    /**********************************************************
+    ## SalesZoneSummaryReportPDFDownload
+     *************************************************************/
+    public function SalesZoneSummaryReportPDFDownload()
+    {
+        if(isset($_GET['history_year']) && !empty($_GET['history_year']) && isset($_GET['history_month']) && !empty($_GET['history_month']) && isset($_GET['sales_zone']) && !empty($_GET['sales_zone'])){
+
+            $history_year = $_GET['history_year'];
+            $history_month = $_GET['history_month'];
+            $sales_zone = $_GET['sales_zone'];
+
+            $zone_summery_list = \App\SalesSummary::where('report_year',$history_year)->where('report_month',$history_month)->where('report_zone_id',$sales_zone)->orderByRaw("FIELD(report_DesigCode,'GL','DGL','DSE','TSE'),report_dateOfjoining  ASC")->get();
+
+            if(count($zone_summery_list)==0)
+                return \Redirect::to('/sales/manage-reports/zone-summary')->with('errormessage','Zone Report is Not Available !!.');
+
+            $zone_info = \App\SalesZone::where('id',$sales_zone)->first();
+
+            $data['zone_summery_list'] = $zone_summery_list;
+            $data['page_title'] = $this->page_title;
+            $data['zone_info']= $zone_info;
+
+            $pdf = \PDF::loadView('summary-reports.pdf.zone-summary-pdf',$data);
+            $pdfname = time().'_summary_report_'.$zone_info->zone_name.'.pdf';
+            return $pdf->download($pdfname);
+
+            //return \View::make('summary-reports.pdf.zone-summary-pdf',$data);
+
+
+        }else return \Redirect::to('/sales/manage-reports/zone-summary')->with('errormessage','Year/Month/Zone is missing !!.');
+
+
+    }
+    /**********************************************************
+    ## SalesZoneSummaryReportPrint
+     *************************************************************/
+    public function SalesZoneSummaryReportPrint()
+    {
+        if(isset($_GET['history_year']) && !empty($_GET['history_year']) && isset($_GET['history_month']) && !empty($_GET['history_month']) && isset($_GET['sales_zone']) && !empty($_GET['sales_zone'])){
+
+            $history_year = $_GET['history_year'];
+            $history_month = $_GET['history_month'];
+            $sales_zone = $_GET['sales_zone'];
+
+            $zone_summery_list = \App\SalesSummary::where('report_year',$history_year)->where('report_month',$history_month)->where('report_zone_id',$sales_zone)->orderByRaw("FIELD(report_DesigCode,'GL','DGL','DSE','TSE'),report_dateOfjoining  ASC")->get();
+
+            if(count($zone_summery_list)==0)
+                return \Redirect::to('/sales/manage-reports/zone-summary')->with('errormessage','Zone Report is Not Available !!.');
+
+            $zone_info = \App\SalesZone::where('id',$sales_zone)->first();
+
+            $data['zone_summery_list'] = $zone_summery_list;
+            $data['page_title'] = $this->page_title;
+            $data['zone_info']= $zone_info;
+
+            return \View::make('summary-reports.print.zone-summary-print',$data);
+
+
+        }else return \Redirect::to('/sales/manage-reports/zone-summary')->with('errormessage','Year/Month/Zone is missing !!.');
+
+
+    }
+
 }

@@ -51,7 +51,9 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-fileupload/bootstrap-fileupload.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/summernote/build/summernote.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/jquery.jgrowl.min.css') }}" />
-    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="shortcut icon" href="{{asset('images/sebl_s.ico')}}" />
+
+
     <style type="text/css">
         .bootbox {
             left: auto !important;
@@ -100,7 +102,7 @@
 <!-- start: FOOTER -->
 <div class="footer clearfix">
     <div class="footer-inner">
-        &copy; Copyright 2018 by Cine CMS.All Rights Reserved.Powered by <a href="http://www.live-technologies.net/" target="_blank">Live Technologies.</a>
+       Copyright © {{date('Y')}}, Southeast Bank Limited.
     </div>
     <div class="footer-items">
         <span class="go-top"><i class="clip-chevron-up"></i></span>

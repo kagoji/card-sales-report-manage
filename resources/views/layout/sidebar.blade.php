@@ -82,8 +82,22 @@
                     </li>
                 </ul>
             </li>
+            <li class="{{(isset($page_title) && (strpos($page_title,'Manage Sales')!== false )) ? 'active' : ''}}">
+                <a href="javascript:void (0)">
+                    <i class="fa fa-mail-forward" aria-hidden="true"></i>
+                    <span class="title">Manage Reports</span><i class="icon-arrow"></i>
+                    <span class="selected"></span>
+                </a>
+                <ul class="sub-menu" style="display: {{(isset($page_title) && (strpos($page_title,'Manage Sales')!== false ))? 'block':'active'}};">
+                    <li class="{{isset($page_title) && ($page_title=='Manage Sales Zone Summary Report View') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/manage-reports/zone-summary')}}">
+                            <span class="title">Zone Summary </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
 
-
+                </ul>
+            </li>
             <li class="{{isset($page_title) && ($page_title=='User Management') ? 'active' : ''}} ">
                 <a href="javascript:void(0)"><i class="clip-user-plus"></i>
                     <span class="title"> User Management </span><i class="icon-arrow"></i>

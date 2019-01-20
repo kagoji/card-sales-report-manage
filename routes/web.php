@@ -114,8 +114,14 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
             Route::post('/settings-csv-sales',array('as'=>'Sales CSV Upload Settings' , 'uses' =>'SalesSettingsController@SalesCsvUploadSubmit'));
 
 
-            Route::get('/role-type/create',array('as'=>'sales Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
+            Route::get('/role-type/create',array('as'=>'Sales Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
             Route::get('report2',array('as'=>'Sales Dashboard 22' , 'uses' =>'AdminController@DashboardPage'));
+
+            #ManageSalesReport
+            Route::get('/manage-reports/zone-summary',array('as'=>'Manage Sales Zone Summary Report View' , 'uses' =>'SalesReportController@SalesZoneSummaryReportView'));
+            Route::get('/manage-reports/zone-summary/pdf',array('as'=>'Manage Sales Zone Summary Report PDF Download' , 'uses' =>'SalesReportController@SalesZoneSummaryReportPDFDownload'));
+            Route::get('/manage-reports/zone-summary/print',array('as'=>'Manage Sales Zone Summary Report Print' , 'uses' =>'SalesReportController@SalesZoneSummaryReportPrint'));
+
 
         });
     });

@@ -6,7 +6,7 @@ use App\Events\SalesTransactionEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SalesTransactionEventListener
+class SalesTransactionEventListener implements ShouldQueue
 {
     /**
      * Create the event listener.
