@@ -28,7 +28,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="clip-users-2"></i>
-                    Sales Commission
+                    Sales Report
                     <div class="panel-tools">
                         <a class="btn btn-xs btn-link panel-collapse collapses" data-toggle="tooltip" data-placement="top" title="Show / Hide" href="#">
                         </a>
@@ -123,7 +123,7 @@
                         <i class="clip-users-2"></i>
                         Sales Zone Summary Report
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="height: 500px;overflow-y: scroll;">
                         <div class="row text-center">
                             <h4 class="page-title">Southeast Bank Ltd.</h4>
                             <p>Card Division, Head Office, Dhaka</p>
@@ -153,7 +153,7 @@
                                     @foreach ($zone_summery_list as $key => $summery_list)
                                         <tr>
                                             <td>{{ ($key+1) }}</td>
-                                            <td>{{ $summery_list->report_ExecutiveName  }}</td>
+                                            <td>{{ $summery_list->report_ExecutiveName}}</td>
                                             <td>{{ $summery_list->report_DesigCode  }}</td>
                                             <td>{{ $summery_list->report_dateOfjoining  }}</td>
                                             <td>{{ $summery_list->report_basic_pay_amount  }}</td>

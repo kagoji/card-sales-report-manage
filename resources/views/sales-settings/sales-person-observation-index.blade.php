@@ -28,7 +28,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="clip-users-2"></i>
-                    Report History
+                    Sales Person Observation
                     <div class="panel-tools">
                         <a class="btn btn-xs btn-link panel-collapse collapses" data-toggle="tooltip" data-placement="top" title="Show / Hide" href="#">
                         </a>
@@ -40,74 +40,54 @@
                 <div class="panel-body">
 
                     <div class="add_item pull-right" style="margin-bottom: 10px;">
-                        <a class="btn btn-primary report_history"  data-action="add"><i class="fa fa-plus"></i>
+                        <a class="btn btn-primary sales_person_observation"  data-action="add"><i class="fa fa-plus"></i>
                             Add</a>
                     </div>
-                    <div class="table-responsive" >
+                    <div class="table-responsive" style="overflow-x:auto; min-width: 100%;">
                         <table class="table table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Title</th>
-                                <th>UserName</th>
-                                <th>Reporting Month</th>
-                                <th>Generate Date</th>
-                                <th>Lock</th>
+                                <th>Executive CODE</th>
+                                <th>Executive Name</th>
+                                <th>Year</th>
+                                <th>Month</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @if (isset($history_list) && count($history_list)>0)
+                            @if (isset($SalesPerson_list) && count($SalesPerson_list)>0)
                                 @php
                                     $page=isset($_GET['page'])? ($_GET['page']-1):0;
                                 @endphp
-                                @foreach ($history_list as $key => $history)
+                                @foreach ($SalesPerson_list as $key => $SalesPerson)
+                                        @php
+                                        $observation_date = substr($SalesPerson->field_name,-7);
+                                        $decription_field_name = 'observation_description_'.$observation_date;
+                                        $date_map = $observation_date.'_01';
+                                        $date_map = explode('_',$date_map);
+                                        $date_map = implode($date_map,'-');
+                                        $year = date('Y',strtotime($date_map));
+                                        $month = date('F',strtotime($date_map));
+
+                                        @endphp
                                     <tr>
                                         <td>{{ ($key+1+($perPage*$page)) }}</td>
-                                        <td>{{ $history->history_title }}</td>
-                                        <td>{{ $history->name }}</td>
-                                        @php
-                                            $history_month = str_pad($history->history_month,2,"0",STR_PAD_LEFT);
-                                        @endphp
-                                        <td>{{ date('F', strtotime("2012-$history_month-01"))}},{{ date('Y', strtotime("$history->history_year-01-01"))}}</td>
-                                        <td>{{ $history->history_date}}</td>
-                                        <td>
-                                            @if($history->history_lock_status==0)
-                                                <span class="label label-info btn-squared">NO</span>
-                                            @else
-                                                <span class="label label-success btn-squared">Yes</span>
-                                            @endif
-                                        </td>
+                                        <td>{{ $SalesPerson->metaExecutiveCode }}</td>
+                                        <td>{{ $SalesPerson->salesExecutiveName }}</td>
+                                        <td>{{ $year }}</td>
+                                        <td>{{ $month }}</td>
                                         <td style="width:18%">
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-purple"><i class="fa fa-wrench"></i> Action</button><button data-toggle="dropdown" class="btn btn-purple dropdown-toggle"><span class="caret"></span></button><ul class="dropdown-menu" role="menu">
-                                                    <li><a class="report_history"  data-action="edit" data-history_id="{{$history->id}}" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil fa fa-white"></i> Edit</a></li>
-                                                    <li>
-                                                        @if($history->history_lock_status == 1)
-                                                            <a class="status-change"
-                                                               data-publish-status="0" data-history_id="{{ $history->id}}" title="Click for un-lock">
-                                                                <i class="fa fa-unlock"></i>Un Lock
-                                                            </a>
-                                                        @else
-                                                            <a class="status-change " title="Click for Lcck"
-                                                               data-publish-status="1" data-history_id="{{ $history->id}}">
-                                                                <i class="fa fa-lock"></i> Lock
-                                                            </a>
-                                                        @endif
-                                                    </li>
-                                                    <li>
-                                                        <a class="history_id_delete" data-history_id="{{$history->id}}">
-                                                            <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
-                                                        </a>
-                                                    </li>
-                                                </ul>
+                                                <a href="#" class="btn btn-xs btn-info tooltips sales_person_observation"  data-action="edit" data-person_observation_id="{{$SalesPerson->id}}" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil fa fa-white"></i></a>
+                                                <a  class="btn btn-xs btn-bricky tooltips sales_person_observation_delete" data-person_observation_id="{{$SalesPerson->id}}" data-placement="top" data-original-title="Remove"><i class="fa fa-times fa fa-white"></i></a>
                                             </div>
                                         </td>
                                     </tr>
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="7">
+                                    <td colspan="5">
                                         <div class="alert alert-success" role="alert">
                                             <h4>No Data Available !</h4>
                                         </div>
@@ -122,12 +102,12 @@
             </div>
         </div>
     </div>
-    <div id="report_history" class="modal fade" tabindex="-1" data-width="760" style="display: none;">
+    <div id="sales_person_observation" class="modal fade" tabindex="-1" data-width="760" style="display: none;">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                 &times;
             </button>
-            <h4 class="modal-title">Report History</h4>
+            <h4 class="modal-title">Sales Person Observation</h4>
         </div>
 
             <div class="modal-body">
@@ -142,9 +122,9 @@
         $(function () {
             var site_url = $('.site_url').val();
             // content delete
-            $('.history_id_delete').on('click', function (e) {
+            $('.sales_person_observation_delete').on('click', function (e) {
                 e.preventDefault();
-                var history_id = $(this).data('history_id');
+                var id = $(this).data('person_observation_id');
                 bootbox.dialog({
                     message: "Are you sure you want to delete ?",
                     title: "<i class='glyphicon glyphicon-trash'></i> Delete !",
@@ -162,7 +142,7 @@
                             callback: function() {
                                 $.ajax({
                                     type: 'GET',
-                                    url: site_url+'/sales/report-history/ajax/view?action=delete&history_id='+history_id,
+                                    url: site_url+'/sales/settings-person-sales-observation/ajax/view?action=delete&person_observation_id='+id,
                                 }).done(function(response){
                                     bootbox.alert(response,
                                         function(){

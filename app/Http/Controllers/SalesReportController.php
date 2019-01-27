@@ -21,7 +21,7 @@ class SalesReportController extends Controller
     public function ReportHistoryView()
     {
         $history_list = \App\ReportHistory::OrderBy('created_at','desc')->leftJoin('users','report_history.user_id','=','users.id')->select('report_history.*','users.name')->paginate(10);
-        $history_list->setPath(url('/report-history/view'));
+        $history_list->setPath(url('/sales/report-history/view'));
         $history_list_pagination = $history_list->render();
         $data['pagination']=$history_list_pagination;
         $data['perPage'] = $history_list->perPage();
@@ -111,7 +111,7 @@ class SalesReportController extends Controller
                 }
 
                 \App\System::EventLogWrite('insert',$event_message);
-                return redirect('/report-history/view')->with('message',$message);
+                return redirect('/sales/report-history/view')->with('message',$message);
             }
 
             #Update
@@ -136,13 +136,13 @@ class SalesReportController extends Controller
                 }
 
                 \App\System::EventLogWrite('update',$event_message);
-                return redirect('/report-history/view')->with('message',$message);
+                return redirect('/sales/report-history/view')->with('message',$message);
             }
 
         }catch (\Exception $e) {
             $errormessage = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
             \App\System::ErrorLogWrite($errormessage);
-            return redirect('/report-history/viewn')->with('errormessage',"Something is wrong!");
+            return redirect('/sales/report-history/viewn')->with('errormessage',"Something is wrong!");
         }
     }
 
@@ -161,12 +161,6 @@ class SalesReportController extends Controller
 
             $zone_summery_list = \App\SalesSummary::where('report_year',$history_year)->where('report_month',$history_month)->where('report_zone_id',$sales_zone)->orderByRaw("FIELD(report_DesigCode,'GL','DGL','DSE','TSE'),report_dateOfjoining  ASC")->get();
 
-            /*$zone_summery_list->setPath(url('/sales/manage-reports/zone-summary'));
-
-            $stock_summery_pagination = $zone_summery_list->appends(['history_year' => $history_year, 'history_month'=> $history_month,'sales_zone'=>$sales_zone])->render();
-
-            $data['pagination'] = $stock_summery_pagination;
-            $data['perPage'] = $zone_summery_list->perPage();*/
             $data['zone_summery_list'] = $zone_summery_list;
 
         }
@@ -235,6 +229,106 @@ class SalesReportController extends Controller
 
 
         }else return \Redirect::to('/sales/manage-reports/zone-summary')->with('errormessage','Year/Month/Zone is missing !!.');
+
+    }
+
+
+    /**********************************************************
+    ## SalesIndividualSummaryReportView
+     *************************************************************/
+    public function SalesIndividualSummaryReportView()
+    {
+        if(isset($_GET['executivecode'])&& !empty($_GET['executivecode'])&& isset($_GET['history_year'])&& !empty($_GET['history_year']) && isset($_GET['history_month'])&& !empty($_GET['history_month'])){
+            $executivecode = $_GET['executivecode'];
+            $report_year = $_GET['history_year'];
+            $report_month = $_GET['history_month'];
+
+            $sales_person_summary = \App\SalesSummary::where('report_year',$report_year)->where('report_month',$report_month)->where('report_ExecutiveCode',$executivecode)->first();
+
+            if(!isset($sales_person_summary->id))
+                return \Redirect::back()->with('errormessage','Sales person Report is Not Available !!.');
+
+            $sales_person_transaction = \App\SalesTransaction::where('transaction_year',$report_year)->where('transaction_month',$report_month)->where('tran_prd_SalesExecutiveCODE',$executivecode)->get();
+
+            $data['sales_person_transaction'] = $sales_person_transaction;
+            $data['sales_person_summary'] = $sales_person_summary;
+
+
+        }
+
+        $data['sales_zone_list'] = \App\SalesZone::all();
+        $data['page_title'] = $this->page_title;
+        return \View::make('summary-reports.individual-summary-view',$data);
+
+    }
+
+    /**********************************************************
+    ## SalesIndividualSummaryReportPDFDownload
+     *************************************************************/
+    public function SalesIndividualSummaryReportPDFDownload()
+    {
+        if(isset($_GET['executivecode'])&& !empty($_GET['executivecode'])&& isset($_GET['history_year'])&& !empty($_GET['history_year']) && isset($_GET['history_month'])&& !empty($_GET['history_month'])){
+            $executivecode = $_GET['executivecode'];
+            $report_year = $_GET['history_year'];
+            $report_month = $_GET['history_month'];
+
+            $sales_person_summary = \App\SalesSummary::where('report_year',$report_year)->where('report_month',$report_month)->where('report_ExecutiveCode',$executivecode)->first();
+
+            if(!isset($sales_person_summary->id))
+                return \Redirect::back()->with('errormessage','Sales person Report is Not Available !!.');
+
+            $sales_person_transaction = \App\SalesTransaction::where('transaction_year',$report_year)->where('transaction_month',$report_month)->where('tran_prd_SalesExecutiveCODE',$executivecode)->get();
+
+            $data['sales_person_transaction'] = $sales_person_transaction;
+            $data['sales_person_summary'] = $sales_person_summary;
+
+            //return \View::make('summary-reports.person-summary-view',$data);
+
+            $pdf = \PDF::loadView('summary-reports.pdf.individual-summary-pdf',$data);
+            $pdfname = time().'_individual_report_'.$executivecode.'.pdf';
+            return $pdf->download($pdfname);
+
+
+        }else return \Redirect::to('/sales/manage-reports/individual-summary')->with('errormessage','Year/Month/Executivecode is missing !!.');
+
+    }
+
+    /**********************************************************
+    ## SalesIndividualSummaryReportPrint
+     *************************************************************/
+    public function SalesIndividualSummaryReportPrint()
+    {
+        if(isset($_GET['executivecode'])&& !empty($_GET['executivecode'])&& isset($_GET['history_year'])&& !empty($_GET['history_year']) && isset($_GET['history_month'])&& !empty($_GET['history_month'])){
+            $executivecode = $_GET['executivecode'];
+            $report_year = $_GET['history_year'];
+            $report_month = $_GET['history_month'];
+
+            $sales_person_summary = \App\SalesSummary::where('report_year',$report_year)->where('report_month',$report_month)->where('report_ExecutiveCode',$executivecode)->first();
+
+            if(!isset($sales_person_summary->id))
+                return \Redirect::back()->with('errormessage','Sales person Report is Not Available !!.');
+
+            $sales_person_transaction = \App\SalesTransaction::where('transaction_year',$report_year)->where('transaction_month',$report_month)->where('tran_prd_SalesExecutiveCODE',$executivecode)->get();
+
+            $data['sales_person_transaction'] = $sales_person_transaction;
+            $data['sales_person_summary'] = $sales_person_summary;
+
+            //return \View::make('summary-reports.person-summary-view',$data);
+
+            return \View::make('summary-reports.print.individual-summary-print',$data);
+
+
+        }else return \Redirect::to('/sales/manage-reports/individual-summary')->with('errormessage','Year/Month/Executivecode is missing !!.');
+
+
+    }
+
+
+    /**********************************************************
+    ## SalesAllIndividualSummaryReportPDFDownload
+     *************************************************************/
+    public function SalesAllIndividualSummaryReportPDFDownload()
+    {
 
 
     }

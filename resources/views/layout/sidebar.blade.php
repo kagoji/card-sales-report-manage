@@ -30,14 +30,14 @@
 
 
             <li class="{{isset($page_title) && ($page_title=='Task Queue View') ? 'active' : ''}} ">
-                <a href="{{url('/task-queue/view')}}"><i class="clip-user-2"></i>
+                <a href="{{url('/sales/task-queue/view')}}"><i class="clip-user-2"></i>
                     <span class="title">Task Queue</span>
                     <span class="selected"></span>
                 </a>
             </li>
 
             <li class="{{isset($page_title) && ($page_title=='Report History View') ? 'active' : ''}} ">
-                <a href="{{url('/report-history/view')}}"><i class="clip-user-2"></i>
+                <a href="{{url('/sales/report-history/view')}}"><i class="clip-user-2"></i>
                     <span class="title">Report History</span>
                     <span class="selected"></span>
                 </a>
@@ -74,6 +74,19 @@
                             <span class="selected"></span>
                         </a>
                     </li>
+
+                    <li class="{{isset($page_title) && ($page_title=='Sales Person Observation Settings') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/settings-person-sales-observation')}}">
+                            <span class="title"> Sales Person Observation </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
+                    <li class="{{isset($page_title) && ($page_title=='Sales Report Settings') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/settings-sales-report')}}">
+                            <span class="title"> Sales Report Settings </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
                     <li class="{{isset($page_title) && ($page_title=='Sales CSV Upload Settings') ? 'active' : ''}} ">
                         <a href="{{url('/sales/settings-csv-sales')}}">
                             <span class="title"> Sales CSV Upload </span>
@@ -92,6 +105,12 @@
                     <li class="{{isset($page_title) && ($page_title=='Manage Sales Zone Summary Report View') ? 'active' : ''}} ">
                         <a href="{{url('/sales/manage-reports/zone-summary')}}">
                             <span class="title">Zone Summary </span>
+                            <span class="selected"></span>
+                        </a>
+                    </li>
+                    <li class="{{isset($page_title) && ($page_title=='Manage Sales Individual Summary Report View') ? 'active' : ''}} ">
+                        <a href="{{url('/sales/manage-reports/individual-summary')}}">
+                            <span class="title">Individual Summary </span>
                             <span class="selected"></span>
                         </a>
                     </li>
@@ -129,52 +148,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="{{(isset($page_title) && (strpos($page_title,'Category')!== false )) ? 'active' : ''}}">
-                <a href="javascript:void (0)">
-                    <i class="fa fa-file-text" aria-hidden="true"></i>
-                    <span class="title"> Category </span><i class="icon-arrow"></i>
-                    <span class="selected"></span>
-                </a>
-                <ul class="sub-menu" style="display: {{( isset($page_title) && (strpos($page_title,'Category') !== false) ) ? 'block':'active'}};">
-                    <li class="{{isset($page_title) && ($page_title=='Add Category') ? 'active' : ''}}">
-                        <a href="{{url('/category/create')}}">
-                            <i class="clip-plus-circle"></i>
-                            <span class="title"> Add Category </span>
-                            <span class="selected"></span>
-                        </a>
-                    </li>
-                    <li class="{{isset($page_title) && ($page_title=='All Category') ? 'active' : ''}}">
-                        <a href="{{url('/category/list')}}">
-                            <i class="fa fa-tasks" aria-hidden="true"></i>
-                            <span class="title">Category List</span>
-                            <span class="selected"></span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="{{(isset($page_title) && (strpos($page_title,'Country')!== false )) ? 'active' : ''}}">
-                <a href="javascript:void (0)">
-                    <i class="fa fa-globe" aria-hidden="true"></i>
-                    <span class="title"> Country </span><i class="icon-arrow"></i>
-                    <span class="selected"></span>
-                </a>
-                <ul class="sub-menu" style="display: {{( isset($page_title) && (strpos($page_title,'Country') !== false) ) ? 'block':'active'}};">
-                    <li class="{{isset($page_title) && ($page_title=='Add Country') ? 'active' : ''}}">
-                        <a href="{{url('/country/create')}}">
-                            <i class="clip-plus-circle"></i>
-                            <span class="title"> Add Country </span>
-                            <span class="selected"></span>
-                        </a>
-                    </li>
-                    <li class="{{isset($page_title) && ($page_title=='All Country') ? 'active' : ''}}">
-                        <a href="{{url('/country/list')}}">
-                            <i class="fa fa-tasks" aria-hidden="true"></i>
-                            <span class="title">Country List</span>
-                            <span class="selected"></span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+
     </ul>
     <!-- end: MAIN NAVIGATION MENU -->
 </div>

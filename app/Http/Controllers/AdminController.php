@@ -302,7 +302,7 @@ class AdminController extends Controller
     public function TaskQueueView()
     {
         $task_list = \App\TaskQueue::OrderBy('created_at','desc')->paginate(10);
-        $task_list->setPath(url('/task-queue/view'));
+        $task_list->setPath(url('/sales/task-queue/view'));
         $task_list_pagination = $task_list->render();
         $data['pagination']= $task_list_pagination;
         $data['perPage'] = $task_list->perPage();

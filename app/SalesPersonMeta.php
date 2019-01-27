@@ -48,7 +48,7 @@ class SalesPersonMeta extends Model
      *********************************************/
     public static function GetObservationStatus($executiveCode,$history_year,$history_month)
     {
-
+        $history_month = str_pad($history_month,2,"0",STR_PAD_LEFT);
         #top_count
         $observation_yearly_count = \App\SettingsMeta::CardMetaValue('observation_yearly_count');
         $observation_yearly_count = !empty($observation_yearly_count)?$observation_yearly_count:2;

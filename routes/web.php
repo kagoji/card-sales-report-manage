@@ -62,13 +62,7 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
     Route::get('/permission-type/list',array('as'=>'Permission Type List' , 'uses' =>'AclController@ListPermissionType'));
 
 
-    #TaskQueue
-    Route::get('/task-queue/view',array('as'=>'Task Queue View' , 'uses' =>'AdminController@TaskQueueView'));
 
-    #ReportHistory
-    Route::get('/report-history/view',array('as'=>'Report History View' , 'uses' =>'SalesReportController@ReportHistoryView'));
-    Route::post('/report-history/view',array('as'=>'Report History View' , 'uses' =>'SalesReportController@ReportHistoryChangeRequest'));
-    Route::get('/report-history/ajax/view',array('as'=>'Report History View Ajax' , 'uses' =>'SalesReportController@ReportHistoryAjaxLoad'));
 
 
     /*################
@@ -86,6 +80,14 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
 
             Route::get('report',array('as'=>'Sales Dashboard' , 'uses' =>'AdminController@DashboardPage'));
 
+            #TaskQueue
+            Route::get('/task-queue/view',array('as'=>'Task Queue View' , 'uses' =>'AdminController@TaskQueueView'));
+
+            #ReportHistory
+            Route::get('/report-history/view',array('as'=>'Report History View' , 'uses' =>'SalesReportController@ReportHistoryView'));
+            Route::post('/report-history/view',array('as'=>'Report History View' , 'uses' =>'SalesReportController@ReportHistoryChangeRequest'));
+            Route::get('/report-history/ajax/view',array('as'=>'Report History View Ajax' , 'uses' =>'SalesReportController@ReportHistoryAjaxLoad'));
+
             #SalesCommission
             Route::get('/settings-commission',array('as'=>'Sales Settings Commission' , 'uses' =>'SalesSettingsController@CommissionSettingsPage'));
             Route::post('/settings-commission',array('as'=>'Sales Settings Commission' , 'uses' =>'SalesSettingsController@CommissionSettingsChangeRequest'));
@@ -102,11 +104,22 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
             Route::post('/settings-zone',array('as'=>'Sales Zone Settings' , 'uses' =>'SalesSettingsController@SalesZoneSettingsChangeRequest'));
             Route::get('/settings-zone/ajax/view',array('as'=>'Sales Zone Settings Ajax' , 'uses' =>'SalesSettingsController@SalesZoneSettingsAjaxLoad'));
 
+            #SalesReportSettings
+            Route::get('/settings-sales-report',array('as'=>'Sales Report Settings' , 'uses' =>'SalesSettingsController@SalesReportSettingsPage'));
+            Route::post('/settings-sales-report',array('as'=>'Sales Report Settings' , 'uses' =>'SalesSettingsController@SalesReportSettingsChangeRequest'));
+            Route::get('/settings-sales-report/ajax/view',array('as'=>'Sales Report Settings Ajax' , 'uses' =>'SalesSettingsController@SalesReportSettingsAjaxLoad'));
 
-            #SalesConfig
+
+            #SalesPerson
             Route::get('/settings-person-sales',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsPage'));
             Route::post('/settings-person-sales',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsChangeRequest'));
             Route::get('/settings-person-sales/ajax/view',array('as'=>'Sales Person Settings Ajax' , 'uses' =>'SalesSettingsController@SalesPersonSettingsAjaxLoad'));
+
+
+            #SalesPersonMeta
+            Route::get('/settings-person-sales-observation',array('as'=>'Sales Person Observation Settings' , 'uses' =>'SalesSettingsController@SalesPersonObservationSettingsPage'));
+            Route::post('/settings-person-sales-observation',array('as'=>'Sales Person Observation Settings' , 'uses' =>'SalesSettingsController@SalesPersonObservationSettingsChangeRequest'));
+            Route::get('/settings-person-sales-observation/ajax/view',array('as'=>'Sales Person Observation Settings Ajax' , 'uses' =>'SalesSettingsController@SalesPersonObservationSettingsAjaxLoad'));
 
             
             #CSV Upload
@@ -121,6 +134,13 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
             Route::get('/manage-reports/zone-summary',array('as'=>'Manage Sales Zone Summary Report View' , 'uses' =>'SalesReportController@SalesZoneSummaryReportView'));
             Route::get('/manage-reports/zone-summary/pdf',array('as'=>'Manage Sales Zone Summary Report PDF Download' , 'uses' =>'SalesReportController@SalesZoneSummaryReportPDFDownload'));
             Route::get('/manage-reports/zone-summary/print',array('as'=>'Manage Sales Zone Summary Report Print' , 'uses' =>'SalesReportController@SalesZoneSummaryReportPrint'));
+
+            #ManageIndividualReport
+            Route::get('/manage-reports/individual-summary',array('as'=>'Manage Sales Individual Summary Report View' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportView'));
+            Route::get('/manage-reports/individual-summary/pdf',array('as'=>'Manage Sales Individual Summary Report PDF Download' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportPDFDownload'));
+            Route::get('/manage-reports/individual-summary/print',array('as'=>'Manage Sales Individual Summary Report Print' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportPrint'));
+
+            Route::post('/manage-reports/individual-summary',array('as'=>'Manage Sales All Individual Summary Report PDF Download' , 'uses' =>'SalesReportController@SalesAllIndividualSummaryReportPDFDownload'));
 
 
         });

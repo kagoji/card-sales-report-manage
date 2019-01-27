@@ -131,11 +131,11 @@ jQuery(function(){
     jQuery(".report_history").on('click', function(event) {
         var action = jQuery(this).data('action');
         var site_url = jQuery('.site_url').val();
-        var request_url = site_url+'/report-history/ajax/view?action='+action;
+        var request_url = site_url+'/sales/report-history/ajax/view?action='+action;
 
         if(action=='edit'){
             var history_id = jQuery(this).data('history_id');
-            request_url = site_url+'/report-history/ajax/view?action='+action+'&history_id='+history_id;
+            request_url = site_url+'/sales/report-history/ajax/view?action='+action+'&history_id='+history_id;
         }
 
         jQuery.ajax({
@@ -144,6 +144,67 @@ jQuery(function(){
             success:function(data){
                 jQuery('.modal-body').html(data);
                 jQuery("#report_history").modal();
+            }
+        });
+    });
+
+});
+
+/*##########################################
+# Sales Person Observation Modal
+############################################
+*/
+
+jQuery(function(){
+
+
+    jQuery(".sales_person_observation").on('click', function(event) {
+        var action = jQuery(this).data('action');
+        var site_url = jQuery('.site_url').val();
+        var request_url = site_url+'/sales/settings-person-sales-observation/ajax/view?action='+action;
+
+        if(action=='edit'){
+            var person_observation_id = jQuery(this).data('person_observation_id');
+            request_url = site_url+'/sales/settings-person-sales-observation/ajax/view?action='+action+'&person_observation_id='+person_observation_id;
+        }
+
+        jQuery.ajax({
+            url: request_url,
+            type: "get",
+            success:function(data){
+                jQuery('.modal-body').html(data);
+                jQuery("#sales_person_observation").modal();
+            }
+        });
+    });
+
+});
+
+
+/*##########################################
+# Sales Report Settings Modal
+############################################
+*/
+
+jQuery(function(){
+
+
+    jQuery(".report_settings").on('click', function(event) {
+        var action = jQuery(this).data('action');
+        var site_url = jQuery('.site_url').val();
+        var request_url = site_url+'/sales/settings-sales-report/ajax/view?action='+action;
+
+        if(action=='edit'){
+            var report_settings_id = jQuery(this).data('report_settings_id');
+            request_url = site_url+'/sales/settings-sales-report/ajax/view?action='+action+'&report_settings_id='+report_settings_id;
+        }
+
+        jQuery.ajax({
+            url: request_url,
+            type: "get",
+            success:function(data){
+                jQuery('.modal-body').html(data);
+                jQuery("#report_settings").modal();
             }
         });
     });

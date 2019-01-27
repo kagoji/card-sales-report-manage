@@ -461,13 +461,217 @@ class SalesSettingsController extends Controller
 
 
 
-            return redirect('/task-queue/view')->with('message',$redirect_message);
+            return redirect('/sales/task-queue/view')->with('message',$redirect_message);
 
 
         }catch (\Exception $e) {
             $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
             \App\System::ErrorLogWrite($message);
             return redirect('/sales/settings-csv-sales')->with('errormessage',"Something is wrong!");
+        }
+    }
+
+
+    /**********************************************************
+    ## SalesPersonObservationSettingsPage
+     *************************************************************/
+
+    public function SalesPersonObservationSettingsPage()
+    {
+        $SalesPerson_list = \App\SalesPersonMeta::where('sales_person_meta.field_name','LIKE','observation_status%')->join('sales_persons','sales_person_meta.metaExecutiveCode','=','sales_persons.salesExecutiveCode')->select('sales_persons.salesExecutiveName','sales_person_meta.*')->OrderBy('created_at','desc')->paginate(10);
+        $SalesPerson_list->setPath(url('/sales/settings-person-sales-meta'));
+        $SalesPerson_list_pagination = $SalesPerson_list->render();
+        $data['pagination']=$SalesPerson_list_pagination;
+        $data['perPage'] = $SalesPerson_list->perPage();
+        $data['SalesPerson_list']= $SalesPerson_list;
+
+        $data['page_title'] = $this->page_title;
+        return \View::make('sales-settings.sales-person-observation-index',$data);
+    }
+
+    /**********************************************************
+    ## SalesPersonObservationSettingsChangeRequest
+     *************************************************************/
+
+    public function SalesPersonObservationSettingsChangeRequest(Request $request)
+    {
+        $v = $request->validate([
+            'metaExecutiveCode' => 'required',
+            'meta_year' => 'required|numeric',
+            'meta_month' => 'required|numeric',
+            'obs_description' => 'required',
+            'action' => 'required',
+        ]);
+
+
+        try{
+            $meta_year = $request->input('meta_year');
+            $meta_month = str_pad($request->input('meta_month'),2,"0",STR_PAD_LEFT);
+            $metaExecutiveCode = $request->input('metaExecutiveCode');
+            $obs_description = $request->input('obs_description');
+
+            $person_info = \App\SalesPerson::where('salesExecutiveCode',$metaExecutiveCode)->first();
+
+            if(!isset($person_info->id))
+                throw new \Exception("Invalid Sales Executive Code");
+
+            #top_count
+            $observation_yearly_count = \App\SettingsMeta::CardMetaValue('observation_yearly_count');
+            $observation_yearly_count = !empty($observation_yearly_count)?$observation_yearly_count:2;
+
+            $filed_name = "observation_status_$meta_year%";
+            $observation_count = \App\SalesPersonMeta::where('metaExecutiveCode',$metaExecutiveCode)->where('field_name','Like',$filed_name)->count();
+
+
+            if(($observation_count)>=$observation_yearly_count)
+                throw new \Exception("Yearly Observation limit $observation_yearly_count is over!");
+
+
+            #MetaDataStatus
+            $meta_status_filed_name = "observation_status_$meta_year"."_".$meta_month;
+            $meta_status['field_name']= $meta_status_filed_name;
+            $meta_status['field_value']= 'yes';
+            $meta_status['metaExecutiveCode']= $metaExecutiveCode;
+
+
+            #MetaDescription
+            $meta_desc_filed_name = "observation_description_$meta_year"."_".$meta_month;
+            $meta_desc['field_name']= $meta_desc_filed_name;
+            $meta_desc['field_value']= $obs_description;
+            $meta_desc['metaExecutiveCode']= $metaExecutiveCode;
+
+
+            if($request->input('action')=='add'){
+
+                $insert = \App\SalesPersonMeta::firstOrCreate(['metaExecutiveCode'=>$metaExecutiveCode,'field_name'=>$meta_status_filed_name],$meta_status);
+                $insert2 = \App\SalesPersonMeta::firstOrCreate(['metaExecutiveCode'=>$metaExecutiveCode,'field_name'=>$meta_desc_filed_name],$meta_desc);
+
+
+                $event_message = json_encode($insert);
+                \App\System::EventLogWrite('insert',$event_message);
+
+                return redirect('/sales/settings-person-sales-observation')->with('message',"Sales Person Observation Successfully!");
+            }
+
+            if($request->input('action')=='edit'){
+
+                $update = \App\SalesPersonMeta::updateOrCreate(['metaExecutiveCode'=>$metaExecutiveCode,'field_name'=>$meta_status_filed_name],$meta_status);
+                $update2 = \App\SalesPersonMeta::updateOrCreate(['metaExecutiveCode'=>$metaExecutiveCode,'field_name'=>$meta_desc_filed_name],$meta_desc);
+                $event_message = json_encode($update);
+                \App\System::EventLogWrite('update',$event_message);
+                return redirect('/sales/settings-person-sales-observation')->with('message',"Sales Person Observation updated Successfully!");
+            }
+
+        }catch (\Exception $e) {
+            $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
+            $redirect_message = $e->getMessage();
+            \App\System::ErrorLogWrite($message);
+            return redirect('/sales/settings-person-sales-observation')->with('errormessage',$redirect_message);
+        }
+    }
+
+    /**********************************************************
+    ## SalesPersonObservationSettingsAjaxLoad
+     *************************************************************/
+
+    public function SalesPersonObservationSettingsAjaxLoad()
+    {
+        $data['action'] = isset($_REQUEST['action'])? $_REQUEST['action']:'';
+
+
+        if($data['action']=='edit'){
+            $data['person_observation_id'] = isset($_REQUEST['person_observation_id'])? $_REQUEST['person_observation_id']:'';
+            $data['observation_info'] = \App\SalesPersonMeta::where('id',$data['person_observation_id'])->first();
+            return \View::make('sales-settings.ajax-sales-person-observation',$data);
+
+        }
+
+        if($data['action']=='delete'){
+            $data['person_observation_id'] = isset($_REQUEST['person_observation_id'])? $_REQUEST['person_observation_id']:'';
+            $person_delete = \App\SalesPersonMeta::where('id',$data['person_observation_id'])->delete();
+            echo "OK";
+        }
+
+        if($data['action']!='delete')
+            return \View::make('sales-settings.ajax-sales-person-observation',$data);
+
+
+    }
+
+    /**********************************************************
+    ## SalesReportSettingsPage
+     *************************************************************/
+
+    public function SalesReportSettingsPage()
+    {
+        $SalesSettings_list = \App\SettingsMeta::OrderBy('created_at','desc')->paginate(10);
+        $SalesSettings_list->setPath(url('/sales/settings-sales-report'));
+        $SalesSettings_list_pagination = $SalesSettings_list->render();
+        $data['pagination']=$SalesSettings_list_pagination;
+        $data['perPage'] = $SalesSettings_list->perPage();
+        $data['SalesSettings_list']= $SalesSettings_list;
+
+        $data['page_title'] = $this->page_title;
+        return \View::make('sales-settings.sales-report-settings-index',$data);
+    }
+
+    /**********************************************************
+    ## SalesReportSettingsAjaxLoad
+     *************************************************************/
+
+    public function SalesReportSettingsAjaxLoad()
+    {
+        $data['action'] = isset($_REQUEST['action'])? $_REQUEST['action']:'';
+
+
+        if($data['action']=='edit'){
+            $data['report_settings_id'] = isset($_REQUEST['report_settings_id'])? $_REQUEST['report_settings_id']:'';
+            $data['settings_info'] = \App\SettingsMeta::where('id',$data['report_settings_id'])->first();
+            return \View::make('sales-settings.ajax-sales-report-settings',$data);
+
+        }
+
+        if($data['action']=='delete'){
+            $data['report_settings_id'] = isset($_REQUEST['report_settings_id'])? $_REQUEST['report_settings_id']:'';
+            $person_delete = \App\SettingsMeta::where('id',$data['report_settings_id'])->delete();
+            echo "OK";
+        }
+
+        if($data['action']!='delete')
+            return \View::make('sales-settings.ajax-sales-report-settings',$data);
+
+
+    }
+
+    /**********************************************************
+    ## SalesReportSettingsChangeRequest
+     *************************************************************/
+
+    public function SalesReportSettingsChangeRequest(Request $request)
+    {
+        $v = $request->validate([
+            'field_name' => 'required',
+            'field_value' => 'required|numeric',
+            'action' => 'required',
+        ]);
+
+        try{
+            $meta_year = $request->input('meta_year');
+
+            #MetaDataStatus
+            $meta_status['field_name']= $request->input('field_name');
+            $meta_status['field_value']= $request->input('field_value');
+
+            $update = \App\SettingsMeta::updateOrCreate(['field_name'=>$meta_status['field_name']],$meta_status);
+            $event_message = json_encode($update);
+            \App\System::EventLogWrite('update',$event_message);
+            return redirect('/sales/settings-sales-report')->with('message',"Sales Settings updated Successfully!");
+
+        }catch (\Exception $e) {
+            $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
+            $redirect_message = $e->getMessage();
+            \App\System::ErrorLogWrite($message);
+            return redirect('/sales/settings-sales-report')->with('errormessage',$redirect_message);
         }
     }
 }

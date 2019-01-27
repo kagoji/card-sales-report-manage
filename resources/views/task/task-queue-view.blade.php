@@ -28,7 +28,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="clip-users-2"></i>
-                    Sales Commission
+                    Sales Task Queue
                     <div class="panel-tools">
                         <a class="btn btn-xs btn-link panel-collapse collapses" data-toggle="tooltip" data-placement="top" title="Show / Hide" href="#">
                         </a>
@@ -39,10 +39,6 @@
                 </div>
                 <div class="panel-body">
 
-                    <div class="add_item pull-right" style="margin-bottom: 10px;">
-                        <a class="btn btn-primary sales_commission"  data-action="add"><i class="fa fa-plus"></i>
-                            Add</a>
-                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover" id="sample-table-1">
                             <thead>
