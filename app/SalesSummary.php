@@ -43,4 +43,28 @@ class SalesSummary extends Model
         'grand_total_amount',
         'report_lock_status',
     ];
+
+
+    /********************************************
+    ## GetLastMonthsSales
+     *********************************************/
+    public static function GetLastMonthsSales($executiveCode,$history_year,$history_month,$count=7)
+    {
+
+        $getLastMonth_report = \App\SalesSummary::select('report_ExecutiveCode','report_year','report_month','basic_card_count')->where('report_ExecutiveCode',$executiveCode)->orderBy('id','desc')->take($count)->get();
+
+        $last_card_report='';
+        $card_grp = array();
+        if(count($getLastMonth_report)>0){
+            foreach ($getLastMonth_report as $key => $report){
+                if($report->report_year != $history_year || $report->report_month !=$history_month){
+                    $history_pad_month = str_pad($report->report_month,2,"0",STR_PAD_LEFT);
+                    $month = "2019-$history_pad_month-27";
+                    $card_grp[]= date('M',strtotime($month)).": ".$report->basic_card_count;
+                }
+            }
+            $last_card_report = count($card_grp)>0? implode($card_grp,','):'';
+        }
+        return $last_card_report;
+    }
 }

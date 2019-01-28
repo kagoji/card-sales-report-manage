@@ -88,7 +88,10 @@
     </style>
 </head>
 <body>
-<?php if(isset($sales_person_summary)){ ?>
+<?php if(isset($get_zone_data)){
+
+    $sales_person_summary =$get_zone_data[0]['sales_person_summary'];
+    ?>
 <div class="box-body">
 
     <section class="pg">

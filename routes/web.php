@@ -390,5 +390,45 @@ Route::get('/report-check',function (){
 
 });
 
+Route::get('/all-downloand',function () {
+    //$executivecode = '437';
+    /*$report_year = 2018;
+    $report_month = 12;
+    $zone_id=3;
+
+    $getAllSalesPerson= \App\SalesPerson::where('sales_persons_status',1)->where('sales_persons_zone_id',$zone_id)->get();
+    $get_zone_data = array();
+    foreach ($getAllSalesPerson as $key => $salesPerson){
+        $person_detail = array();
+        $executivecode=$salesPerson->salesExecutiveCode;
+        $sales_person_summary = \App\SalesSummary::where('report_year',$report_year)->where('report_month',$report_month)->where('report_ExecutiveCode',$executivecode)->first();
+
+        if(!isset($sales_person_summary->id))
+            return \Redirect::back()->with('errormessage','Sales person Report is Not Available !!.');
+
+        $sales_person_transaction = \App\SalesTransaction::where('transaction_year',$report_year)->where('transaction_month',$report_month)->where('tran_prd_SalesExecutiveCODE',$executivecode)->get();
+        $last_card_report = \App\SalesSummary::GetLastMonthsSales($executivecode,$report_year,$report_month);
+        $person_detail['sales_person_transaction'] = $sales_person_transaction;
+        $person_detail['sales_person_summary'] = $sales_person_summary;
+        $person_detail['last_card_report'] = \App\SalesSummary::GetLastMonthsSales($executivecode,$report_year,$report_month);
+        $person_detail['observation_status'] = \App\SalesPersonMeta::GetObservationStatus($executivecode,$report_year,$report_month);
+
+        $get_zone_data[]=$person_detail;
+    }
+
+    $data['get_zone_data'] = $get_zone_data;
+
+    return \View::make('summary-reports.pdf.zone-individual-summary-pdf',$data);*/
+
+
+    echo storage_path()."And";
+
+
+
+    //var_dump($get_zone_data);
+
+});
+
+
 
 

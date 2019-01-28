@@ -134,13 +134,15 @@
                                 <p> Sales Code:<?php echo isset($sales_person_summary->report_ExecutiveCode)?$sales_person_summary->report_ExecutiveCode:''; ?> </p> <br/>
 
                                 <table style="margin-bottom: 55px; font-weight: bold">
+                                    <?php if(isset($last_card_report) && !empty($last_card_report)){ ?>
                                     <tr>
                                         <td>Card Sale (6 Months)</td>
-                                        <td>Dec: 14, Nov: 18, Oct: 27, Sep: 12, Aug: 19, Jul: 22</td>
+                                        <td><?php  echo isset($last_card_report)?$last_card_report:''; ?></td>
                                     </tr>
+                                    <?php }?>
                                     <tr>
-                                        <td>Packages (2018)</td>
-                                        <td>02, Month: December, July</td>
+                                        <td>Packages (<?php echo $sales_person_summary->report_year;?>)</td>
+                                        <td><?php  echo isset($observation_status['observation_count'])? str_pad($observation_status['observation_count'],2,'0',STR_PAD_LEFT):''; ?>, Month: <?php  echo isset($observation_status['last_observation'])?$observation_status['last_observation']:''; ?></td>
                                     </tr>
                                 </table>
 
@@ -278,7 +280,7 @@
         </div>
 
         <div class="modal-body">
-            <form role="form" class="form-horizontal" action="{{ url('/sales/report-history/view') }}"
+            <form role="form" class="form-horizontal" action="{{ url('/sales/manage-reports/individual-summary') }}"
                   id="" method="post" role="form" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-12">
@@ -289,7 +291,7 @@
                                 <span class="symbol required" aria-required="true"></span>
                             </label>
                             <div class="col-sm-5">
-                                <select name="sales_zone" class="form-control transaction_list">
+                                <select name="sales_zone" class="form-control">
                                     <option value="0"> Select Cost</option>
                                     @if(!empty($sales_zone_list) && count($sales_zone_list)>0)
                                         @foreach ($sales_zone_list as $key => $list){
@@ -307,7 +309,7 @@
                                 <span class="symbol required" aria-required="true"></span>
                             </label>
                             <div class="col-sm-5">
-                                <input type="number" class="form-control" name="history_year" min="2017" step="1">
+                                <input type="number" class="form-control" name="report_year" min="2017" step="1">
                             </div>
                         </div>
                         <div class="form-group col-md-12">
@@ -316,7 +318,7 @@
                                 <span class="symbol required" aria-required="true"></span>
                             </label>
                             <div class="col-sm-5">
-                                <select class="form-control" name="history_month">
+                                <select class="form-control" name="report_month">
                                     <option value=''>--Select Month--</option>
                                     <option selected value='1'>Janaury</option>
                                     <option value='2'>February</option>

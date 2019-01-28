@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Events\SummaryReportGenerateEvent;
+use App\Events\ZoneIndividualSummaryReportEvent;
 
 class SalesReportController extends Controller
 {
@@ -252,6 +253,8 @@ class SalesReportController extends Controller
 
             $data['sales_person_transaction'] = $sales_person_transaction;
             $data['sales_person_summary'] = $sales_person_summary;
+            $data['last_card_report'] = \App\SalesSummary::GetLastMonthsSales($executivecode,$report_year,$report_month);
+            $data['observation_status'] = \App\SalesPersonMeta::GetObservationStatus($executivecode,$report_year,$report_month);
 
 
         }
@@ -281,8 +284,9 @@ class SalesReportController extends Controller
 
             $data['sales_person_transaction'] = $sales_person_transaction;
             $data['sales_person_summary'] = $sales_person_summary;
+            $data['last_card_report'] = \App\SalesSummary::GetLastMonthsSales($executivecode,$report_year,$report_month);
+            $data['observation_status'] = \App\SalesPersonMeta::GetObservationStatus($executivecode,$report_year,$report_month);
 
-            //return \View::make('summary-reports.person-summary-view',$data);
 
             $pdf = \PDF::loadView('summary-reports.pdf.individual-summary-pdf',$data);
             $pdfname = time().'_individual_report_'.$executivecode.'.pdf';
@@ -312,8 +316,9 @@ class SalesReportController extends Controller
 
             $data['sales_person_transaction'] = $sales_person_transaction;
             $data['sales_person_summary'] = $sales_person_summary;
+            $data['last_card_report'] = \App\SalesSummary::GetLastMonthsSales($executivecode,$report_year,$report_month);
+            $data['observation_status'] = \App\SalesPersonMeta::GetObservationStatus($executivecode,$report_year,$report_month);
 
-            //return \View::make('summary-reports.person-summary-view',$data);
 
             return \View::make('summary-reports.print.individual-summary-print',$data);
 
@@ -327,9 +332,46 @@ class SalesReportController extends Controller
     /**********************************************************
     ## SalesAllIndividualSummaryReportPDFDownload
      *************************************************************/
-    public function SalesAllIndividualSummaryReportPDFDownload()
+    public function SalesAllIndividualSummaryReportPDFDownload(Request $request)
     {
+        $v = $request->validate([
+            'sales_zone' => 'required',
+            'report_year' => 'required|numeric',
+            'report_month' => 'required|numeric',
+        ]);
 
+        try{
+            $event_data['sales_zone'] = $request->input('sales_zone');
+            $event_data['report_year'] = $request->input('report_year');
+            $event_data['report_month'] = $request->input('report_month');
+
+            $zone_info = \App\SalesZone::where('id',$event_data['sales_zone'])->first();
+
+            if(!isset($zone_info->id))
+                throw new \Exception("Invalid Zone!!");
+
+
+            #Taskinfo
+            $task['task_user_id']= \Auth::user()->id;
+            $task['task_user_name']= \Auth::user()->name;
+            $task['task_status']= 1;
+            $task['task_name']= $zone_info->zone_name.' Individual Summary Report Download';
+            $task['task_start_at'] = date('Y-m-d H:i:s');
+
+
+            #EventData
+            $event_data['task_info'] = $task;
+
+            \Event::fire(new ZoneIndividualSummaryReportEvent($event_data));
+            $redirect_message = "Please Check Task Status . Current Status is Running ";
+            return redirect('/sales/manage-reports/individual-summary')->with('message',$redirect_message);
+
+        }catch (\Exception $e) {
+            $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
+            $redirect_message = $e->getMessage();
+            \App\System::ErrorLogWrite($message);
+            return redirect('/sales/manage-reports/individual-summary')->with('errormessage',$redirect_message);
+        }
 
     }
 

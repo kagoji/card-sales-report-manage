@@ -76,6 +76,26 @@ class SalesPersonMeta extends Model
 
         }
 
+
+        #Observation
+        $last_observation='';
+        $observation_grp = array();
+        $observation_all = \App\SalesPersonMeta::where('metaExecutiveCode',$executiveCode)->where('field_name','Like',$filed_name)->get();
+
+        if(count($observation_all)>0){
+            foreach ($observation_all as $key => $observation_list){
+                $observation_date = substr($observation_list->field_name,-7);
+                $date_map = $observation_date.'_01';
+                $date_map = explode('_',$date_map);
+                $date_map = implode($date_map,'-');
+                $month = date('F',strtotime($date_map));
+                $observation_grp[]=$month;
+            }
+            $last_observation = count($observation_grp)>0?implode($observation_grp,','):'';
+        }
+
+        $data['last_observation']=$last_observation;
+
         $event_message = "ExecutiveCode $executiveCode | History : $history_year| Month: $history_month | Observation :".json_encode($data);
         \App\System::CustomLogWritter("SalesPersonCardReport","sales_person_observation_log",$event_message);
 
