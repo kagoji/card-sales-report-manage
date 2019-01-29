@@ -22,7 +22,7 @@
                 </a>
             </li>
             <li class="{{isset($page_title) && ($page_title=='ACL Settings') ? 'active' : ''}} ">
-                <a href="{{url('/acl-settings')}}"><i class="clip-user-2"></i>
+                <a href="{{url('/acl-settings')}}"><i class="clip-cube-2"></i>
                     <span class="title"> ACL Settings </span>
                     <span class="selected"></span>
                 </a>
@@ -30,21 +30,21 @@
 
 
             <li class="{{isset($page_title) && ($page_title=='Task Queue View') ? 'active' : ''}} ">
-                <a href="{{url('/sales/task-queue/view')}}"><i class="clip-user-2"></i>
+                <a href="{{url('/sales/task-queue/view')}}"><i class="clip-stack-2"></i>
                     <span class="title">Task Queue</span>
                     <span class="selected"></span>
                 </a>
             </li>
 
             <li class="{{isset($page_title) && ($page_title=='Report History View') ? 'active' : ''}} ">
-                <a href="{{url('/sales/report-history/view')}}"><i class="clip-user-2"></i>
+                <a href="{{url('/sales/report-history/view')}}"><i class="clip-stack"></i>
                     <span class="title">Report History</span>
                     <span class="selected"></span>
                 </a>
             </li>
             <li class="{{(isset($page_title) && ((strpos($page_title,'Settings')!== false ) && (strpos($page_title,'Sales')!== false ))) ? 'active' : ''}}">
                 <a href="javascript:void (0)">
-                    <i class="fa fa-mail-forward" aria-hidden="true"></i>
+                    <i class="fa fa-gears" aria-hidden="true"></i>
                     <span class="title">Sales Settings</span><i class="icon-arrow"></i>
                     <span class="selected"></span>
                 </a>
@@ -97,7 +97,7 @@
             </li>
             <li class="{{(isset($page_title) && (strpos($page_title,'Manage Sales')!== false )) ? 'active' : ''}}">
                 <a href="javascript:void (0)">
-                    <i class="fa fa-mail-forward" aria-hidden="true"></i>
+                    <i class="clip-folder" aria-hidden="true"></i>
                     <span class="title">Manage Reports</span><i class="icon-arrow"></i>
                     <span class="selected"></span>
                 </a>
@@ -118,7 +118,7 @@
                 </ul>
             </li>
             <li class="{{isset($page_title) && ($page_title=='User Management') ? 'active' : ''}} ">
-                <a href="javascript:void(0)"><i class="clip-user-plus"></i>
+                <a href="javascript:void(0)"><i class="clip-users"></i>
                     <span class="title"> User Management </span><i class="icon-arrow"></i>
                     <span class="selected"></span>
                 </a>
@@ -129,22 +129,14 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{url('/user/management?tab=active_user')}}">
+                            <span class="title"> Active User </span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{url('/user/management?tab=blocked_user')}}">
                             <span class="title"> Blocked User </span>
                         </a>
-                    </li>
-
-                    <li>
-                        <a href="javascript:;">
-                            User List <i class="icon-arrow"></i>
-                        </a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a href="{{url('admin/user/management?tab=admins')}}">
-                                    Admins
-                                </a>
-                            </li>
-                        </ul>
                     </li>
                 </ul>
             </li>

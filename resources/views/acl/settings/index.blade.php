@@ -149,7 +149,7 @@
             </button>
             <h4 class="modal-title">Role Type Add</h4>
         </div>
-        <form role="form" class="form-horizontal" action="{{ url('/role-type/create') }}"
+        <form role="form" class="form-horizontal" action="{{ url('/acl-settings') }}"
               id="" method="post" role="form" enctype="multipart/form-data">
         <div class="modal-body">
             <div class="row">
@@ -158,11 +158,12 @@
                         <input type="hidden" name="_token" value="{{csrf_token()}}">
                         <div class="form-group col-md-8">
                             <label class="col-sm-5 control-label">
-                                <strong>Type Name</strong>
+                                <strong>Role Name</strong>
                                 <span class="symbol required" aria-required="true"></span>
                             </label>
                             <div class="col-sm-5">
-                                <input type="text" class="form-control" name="name">
+                                <input type="text" class="form-control" name="add_name">
+                                <input type="hidden" class="form-control" name="add_type" value="role">
                             </div>
                         </div>
                 </div>
@@ -184,9 +185,9 @@
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                 &times;
             </button>
-            <h4 class="modal-title">Role Type Add</h4>
+            <h4 class="modal-title">Permission Type Add</h4>
         </div>
-        <form role="form" class="form-horizontal" action="{{ url('/permission-type/create') }}"
+        <form role="form" class="form-horizontal" action="{{ url('/acl-settings') }}"
               id="" method="post" role="form" enctype="multipart/form-data">
             <div class="modal-body">
                 <div class="row">
@@ -195,11 +196,12 @@
                         <input type="hidden" name="_token" value="{{csrf_token()}}">
                         <div class="form-group col-md-8">
                             <label class="col-sm-5 control-label">
-                                <strong>Type Name</strong>
+                                <strong>Permission Name</strong>
                                 <span class="symbol required" aria-required="true"></span>
                             </label>
                             <div class="col-sm-5">
-                                <input type="text" class="form-control" name="name">
+                                <input type="text" class="form-control" name="add_name">
+                                <input type="hidden" class="form-control" name="add_type" value="permission">
                             </div>
                         </div>
                     </div>

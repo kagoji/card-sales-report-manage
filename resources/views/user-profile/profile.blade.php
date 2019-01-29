@@ -66,7 +66,7 @@
                                                         @if($user_info->user_profile_image != '')
                                                             <img src="{{asset($user_info->user_profile_image)}}" alt="User Profile Photo">
                                                         @else
-                                                            <img width="150px" height="150px" src="{{asset('assets/images/avatar-1-xl.jpg')}}" alt="User Profile Photo">
+                                                            <img width="150px" height="150px" src="{{asset('images/user-profile/default-avatar.png')}}" alt="User Profile Photo">
                                                         @endif
                                                     </div>
                                                     <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
@@ -189,7 +189,7 @@
                                                 @if ($user_info->user_profile_image !='')
                                                     <img src="{{asset($user_info->user_profile_image)}}" alt="User Profile Photo">
                                                 @else
-                                                    <img width="150px" height="150px" src="{{asset('images/avatar-1.jpg')}}" alt="User Profile Photo">
+                                                    <img width="150px" height="150px" src="{{asset('images/user-profile/default-avatar.png')}}" alt="User Profile Photo">
                                                 @endif
                                             </div>
                                             <div class="fileupload-preview fileupload-exists thumbnail profile_img_size" style="line-height: 20px;"></div>
@@ -228,7 +228,7 @@
                                     @if (!empty($user_info->user_profile_image))
                                         <img src="{{asset($user_info->user_profile_image)}}" alt="User Profile Photo">
                                     @else
-                                        <img width="150px" height="150px" src="{{asset('images/avatar-1.jpg')}}" alt="User Profile Photo">
+                                        <img width="150px" height="150px" src="{{asset('images/user-profile/default-avatar.png')}}" alt="User Profile Photo">
                                     @endif
 
 

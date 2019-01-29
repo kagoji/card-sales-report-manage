@@ -33,14 +33,22 @@
         <div class="col-sm-12">
             <div class="tabbable">
                 <ul class="nav nav-tabs tab-padding tab-space-3 tab-blue" id="myTab4">
-                    <li class="{{($tab=='create_user') ? 'active' : ''}}">
-                        <a data-toggle="tab" href="#create_user">
-                            Create User
-                        </a>
-                    </li>
-                    <li class="{{$tab=='admins' ? 'active':''}}">
-                        <a data-toggle="tab" href="#admins">
-                            Admins
+                    @if($tab=='edit_user')
+                        <li class="{{($tab=='edit_user') ? 'active' : ''}}">
+                            <a data-toggle="tab" href="#edit_user">
+                                Edit User
+                            </a>
+                        </li>
+                    @else
+                        <li class="{{($tab=='create_user') ? 'active' : ''}}">
+                            <a data-toggle="tab" href="#create_user">
+                                Create User
+                            </a>
+                        </li>
+                    @endif
+                    <li class="{{$tab=='active_user' ? 'active':''}}">
+                        <a data-toggle="tab" href="#active_user">
+                            Active Users
                         </a>
                     </li>
                     <li class="{{($tab=='blocked_user') ? 'active' : ''}}">
@@ -94,15 +102,13 @@
                                                 </label>
                                                 <select class="form-control search-select" name="user_type" >
                                                     <option value="" selected="selected">Please select user role</option>
-                                                    <option value="admin"> Admin </option>
-                                                    <option value="official_user"> Official </option>
-                                                    <option value="normal_user"> Normal </option>
-                                                    <option value="customer-care"> Customer Care </option>
+                                                    @if(isset($role_list) && count($role_list)>0)
+                                                        @foreach($role_list as $key => $role)
+                                                            <option value="{{$role->name}}">{{strtoupper($role->name)}}</option>
+                                                        @endforeach
+                                                    @endif
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-
                                             <div class="form-group">
                                                 <label class="control-label">
                                                     Password
@@ -123,7 +129,7 @@
                                                 <label> User Profile Image </label>
                                                 <div class="fileupload fileupload-new" data-provides="fileupload">
                                                     <div class="fileupload-new thumbnail profile_img_size" >
-                                                        <img width="150px" height="150px" src="{{asset('images/default.jpg')}}" alt="">
+                                                        <img width="150px" height="150px" src="{{asset('images/user-profile/default-avatar.png')}}" alt="">
                                                     </div>
                                                     <div class="fileupload-preview fileupload-exists thumbnail profile_img_size"
                                                          style="line-height: 20px;">
@@ -146,26 +152,39 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label> Access Permission </label>
                                             </div>
-                                            <div class="checkbox">
-                                                <label class="">
-                                                    <input type="checkbox" name="select_all_box" id="select_all_box" value="all"> All
-                                                </label>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <td ><input type="checkbox" id="all_permission" name="all"  /></td>
+                                                            <td>Permission List</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if(isset($permission_list) && count($permission_list)>0)
+                                                            @foreach($permission_list as $key => $permission)
+                                                                <tr>
+                                                                    <td><input type="checkbox" class="" name="permission[]" value="{{$permission->name}}" /></td>
+                                                                    <td>{{$permission->name}}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @else
+                                                            <tr>
+                                                                <td colspan="2">No data available</td>
+                                                            </tr>
+                                                        @endif
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" name="route_name_1" id="inlineCheckbox1" value="option1"> 1
-                                            </label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" id="inlineCheckbox2" value="option2"> 2
-                                            </label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
-                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+
                                         </div>
                                         <div class="col-md-4 pull-right">
                                             <button class="btn btn-teal btn-block " type="submit">
@@ -188,7 +207,7 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Name</th>
-                                            <th>Name Slug</th>
+                                            <th>Role</th>
                                             <th>Email</th>
                                             <th>Mobile</th>
                                             <th>Status</th>
@@ -201,21 +220,40 @@
                                                 <tr>
                                                     <td>{{ $key+1 }}</td>
                                                     <td>{{ $blocked_user_list->name }}</td>
-                                                    <td>{{ $blocked_user_list->name_slug }}</td>
+                                                    <td>{{ strtoupper($blocked_user_list->user_type) }}</td>
                                                     <td>{{ $blocked_user_list->email }}</td>
                                                     <td>{{ $blocked_user_list->user_mobile }}</td>
                                                     <th><span class="label label-danger btn-squared">{{ $blocked_user_list->status }}</span></th>
-                                                    <td>
-                                                        <button class="btn btn-danger btn-xs user_status btn-squared"
-                                                                data-user-id="{{$blocked_user_list->id}}" data-status="active">
-                                                            Deactivate
-                                                        </button>
+                                                    <td style="width:14%">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-purple"><i class="fa fa-wrench"></i> Action</button><button data-toggle="dropdown" class="btn btn-purple dropdown-toggle"><span class="caret"></span></button><ul class="dropdown-menu" role="menu">
+                                                                <li>
+                                                                    <a href="{{url('/user/management?action=edit&tab=edit_user&user_id='.$blocked_user_list->id)}}"
+                                                                    ><i class="fa fa-pencil"></i> Edit</a>
+                                                                </li>
+                                                                <li>
+                                                                    @if ($blocked_user_list->status !="active")
+                                                                        <a class="user_status" title="Click for Active"
+                                                                           data-user-id="{{$blocked_user_list->id}}" data-status="active">
+                                                                            <i class="fa fa-unlock"></i> Active
+                                                                        </a>
+                                                                    @endif
+
+                                                                </li>
+                                                                <li>
+                                                                    <a class="user-delete" data-user-id="{{$blocked_user_list->id}}">
+                                                                        <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                                                                    </a>
+                                                                </li>
+
+                                                            </ul>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="9">
+                                                <td colspan="7">
                                                     <div class="alert alert-success" role="alert">
                                                         <center><h4>No Data Available !</h4></center>
                                                     </div>
@@ -229,8 +267,133 @@
                         </div>
                     </div>
                     <!-- END PANEL FOR BLOCK USER -->
+                    <!-- PANEL FOR EDIT USER -->
+                    @if(isset($edit_user_info)&&!empty($edit_user_info))
+                        <div id="edit_user" class="tab-pane {{$tab=='edit_user' ? 'active':''}}">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form id="edit_user-form"  action="{{url('/user/'.$edit_user_info->id.'/update')}}" method="post"
+                                          enctype="multipart/form-data" class="user-form">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h3>Account Info</h3>
+                                                <hr>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="firstname2" class="control-label">
+                                                        Name
+                                                        <span class="symbol" aria-required="true"></span>
+                                                    </label>
+                                                    <input id="first_name" type="text" placeholder="Name"
+                                                           class="form-control" name="name" value="{{(isset($edit_user_info->name))?$edit_user_info->name:''}}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="email2" class="control-label">
+                                                        Email Address
+                                                        <span class="symbol" aria-required="true"></span>
+                                                    </label>
+                                                    <input type="email" value="{{(isset($edit_user_info->email))?$edit_user_info->email:''}}" class="form-control" name="email">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">
+                                                        Mobile
+                                                        <span class="symbol " aria-required="true"></span>
+                                                    </label>
+                                                    <input type="text" value="{{(isset($edit_user_info->user_mobile))?$edit_user_info->user_mobile:''}}" class="form-control"
+                                                           id="user_mobile" name="user_mobile"  >
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">
+                                                        User Type
+                                                        <span class="symbol" aria-required="true"></span>
+                                                    </label>
+                                                    <select class="form-control search-select" name="user_type">
+                                                        <option value="" selected="selected"> Please select user type</option>
+                                                        @if(isset($role_list) && count($role_list)>0)
+                                                            @foreach($role_list as $key => $role)
+                                                                <option {{(isset($edit_user_info->user_type) &&($edit_user_info->user_type==$role->name))? 'selected':''}} value="{{$role->name}}">{{strtoupper($role->name)}}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label> User Profile Image </label>
+                                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                                                        <div class="fileupload-new thumbnail profile_img_size" >
+                                                            <img width="150px" height="150px" src="{{(isset($edit_user_info->user_profile_image) && !empty($edit_user_info->user_profile_image))?asset($edit_user_info->user_profile_image):asset('images/user-profile/default-avatar.png')}}" alt="">
+                                                        </div>
+                                                        <div class="fileupload-preview fileupload-exists thumbnail profile_img_size"
+                                                             style="line-height: 20px;">
+                                                        </div>
+                                                        <div class="user-edit-image-buttons">
+													<span class="btn btn-light-grey btn-file">
+														<span class="fileupload-new image-filechange">
+                                                            <i class="fa fa-picture"></i> Select image
+                                                        </span>
+														<span class="fileupload-exists image-filechange">
+                                                            <i class="fa fa-picture"></i> Change
+                                                        </span>
+														<input type="file" name="image_url" value="" />
+													</span>
+                                                            <a href="#" class="btn fileupload-exists btn-light-grey"
+                                                               data-dismiss="fileupload">
+                                                                <i class="fa fa-times"></i> Remove
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label> Access Permission </label>
+                                                </div>
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-hover">
+                                                        <thead>
+                                                        <tr>
+                                                            <td ><input type="checkbox" id="all_permission" name="all"  /></td>
+                                                            <td>Permission List</td>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        @php
+                                                            $user_permission = isset($edit_user_info->user_permission)&& !empty(isset($edit_user_info->user_permission))? explode(',',$edit_user_info->user_permission):array();
+                                                        @endphp
+                                                        @if(isset($permission_list) && count($permission_list)>0)
+                                                            @foreach($permission_list as $key => $permission)
+                                                                <tr>
+                                                                    <td><input type="checkbox" {{(in_array($permission->name,$user_permission)?'checked':'')}} name="permission[]" value="{{$permission->name}}" /></td>
+                                                                    <td>{{$permission->name}}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @else
+                                                            <tr>
+                                                                <td colspan="2">No data available</td>
+                                                            </tr>
+                                                        @endif
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input type="hidden" name="_token" value="{{csrf_token()}}">
+                                                <button class="btn btn-teal btn-block" type="submit">
+                                                    Update <i class="fa fa-arrow-circle-right"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                @endif
+                <!-- END PANEL FOR CREATE USER -->
                     <!-- PANEL FOR ADMINS -->
-                    <div id="admins" class="tab-pane {{$tab=='admins' ? 'active':''}}">
+                    <div id="active_user" class="tab-pane {{$tab=='active_user' ? 'active':''}}">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="table-responsive">
@@ -239,7 +402,7 @@
                                         <tr>
                                             <th>SL</th>
                                             <th>Name</th>
-                                            <th>Name Slug</th>
+                                            <th>Role</th>
                                             <th>Email</th>
                                             <th>Mobile</th>
                                             <th>Status</th>
@@ -247,39 +410,51 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @if (!empty($admins))
-                                            @foreach ($admins as $key => $admin_user_list)
+                                        @if (!empty($active_users))
+                                            @foreach ($active_users as $key => $user_list)
                                                 <tr>
                                                     <td>{{ $key+1 }}</td>
-                                                    <td>{{ $admin_user_list->name }}</td>
-                                                    <td>{{ $admin_user_list->name_slug }}</td>
-                                                    <td>{{ $admin_user_list->email }}</td>
-                                                    <td>{{ $admin_user_list->user_mobile }}</td>
+                                                    <td>{{ $user_list->name }}</td>
+                                                    <td>{{ strtoupper($user_list->user_type) }}</td>
+                                                    <td>{{ $user_list->email }}</td>
+                                                    <td>{{ $user_list->user_mobile }}</td>
                                                     <td>
-                                                        @if($admin_user_list->status == "active")
-                                                            <span class="label label-success btn-squared">{{ $admin_user_list->status }}</span>
+                                                        @if($user_list->status == "active")
+                                                            <span class="label label-success btn-squared">{{ $user_list->status }}</span>
                                                         @else
-                                                            <span class="label label-danger btn-squared">{{ $admin_user_list->status }}</span>
+                                                            <span class="label label-danger btn-squared">{{ $user_list->status }}</span>
                                                         @endif
                                                     </td>
-                                                    <td>
-                                                        @if ($admin_user_list->status=="active")
-                                                            <button class="btn btn-success btn-xs user_status btn-squared"
-                                                                    data-user-id="{{$admin_user_list->id}}" data-status="deactivate">
-                                                                Active
-                                                            </button>
-                                                        @else
-                                                            <button class="btn btn-danger btn-xs user_status btn-squared"
-                                                                    data-user-id="{{$admin_user_list->id}}" data-status="active">
-                                                                Deactivate
-                                                            </button>
-                                                        @endif
+                                                    <td style="width:14%">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-purple"><i class="fa fa-wrench"></i> Action</button><button data-toggle="dropdown" class="btn btn-purple dropdown-toggle"><span class="caret"></span></button><ul class="dropdown-menu" role="menu">
+                                                                <li>
+                                                                    <a href="{{url('/user/management?action=edit&tab=edit_user&user_id='.$user_list->id)}}"
+                                                                    ><i class="fa fa-pencil"></i> Edit</a>
+                                                                </li>
+                                                                <li>
+                                                                    @if ($user_list->status=="active")
+                                                                        <a class="user_status" title="Click for Deactive"
+                                                                           data-user-id="{{$user_list->id}}" data-status="deactivate">
+                                                                            <i class="fa fa-lock"></i> DeActive
+                                                                        </a>
+                                                                    @endif
+
+                                                                </li>
+                                                                <li>
+                                                                    <a class="user-delete" data-user-id="{{$user_list->id}}">
+                                                                        <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                                                                    </a>
+                                                                </li>
+
+                                                            </ul>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="9">
+                                                <td colspan="7">
                                                     <div class="alert alert-success" role="alert">
                                                         <center><h4>No Data Available !</h4></center>
                                                     </div>
@@ -311,9 +486,6 @@
                     required: true,
                     email: true
                 },
-                user_mobile: {
-                    required: true
-                },
                 user_type: {
                     required:true
                 },
@@ -325,12 +497,6 @@
                     required : true,
                     minlength : 4,
                     equalTo : "#password"
-                },
-                user_role: {
-                    required: true
-                },
-                image_url: {
-                    required: true
                 }
             },
             highlight: function (element) {
@@ -350,6 +516,44 @@
                 }
             }
         });
+
+        // User delete
+        $('.user-delete').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).data('user-id');
+            bootbox.dialog({
+                message: "Are you sure you want to delete this User ?",
+                title: "<i class='glyphicon glyphicon-trash'></i> Delete !",
+                buttons: {
+                    success: {
+                        label: "No",
+                        className: "btn-success btn-squared",
+                        callback: function() {
+                            $('.bootbox').modal('hide');
+                        }
+                    },
+                    danger: {
+                        label: "Delete!",
+                        className: "btn-danger btn-squared",
+                        callback: function() {
+                            $.ajax({
+                                type: 'GET',
+                                url: site_url+'/user/delete/'+id,
+                            }).done(function(response){
+                                bootbox.alert(response,
+                                    function(){
+                                        location.reload(true);
+                                    }
+                                );
+                            }).fail(function(response){
+                                bootbox.alert(response);
+                            })
+                        }
+                    }
+                }
+            });
+        });
+
         $('.user_status').on('click', function (e) {
             e.preventDefault();
             var id = $(this).data('user-id');
@@ -372,7 +576,7 @@
                             callback: function() {
                                 $.ajax({
                                     type: 'GET',
-                                    url: site_url+'/admin/change/user/status/'+id+'/'+value,
+                                    url: site_url+'/change/user/status/'+id+'/'+value,
                                 }).done(function(response){
                                     bootbox.alert(response,
                                         function(){
@@ -405,7 +609,7 @@
                             callback: function() {
                                 $.ajax({
                                     type: 'GET',
-                                    url: site_url+'/admin/change/user/status/'+id+'/'+value,
+                                    url: site_url+'/change/user/status/'+id+'/'+value,
                                 }).done(function(response){
                                     bootbox.alert(response,
                                         function(){
@@ -422,5 +626,9 @@
             }
         });
     });
+    $('#all_permission').on('click', function (e) {
+        $('input:checkbox').not(this).prop('checked', this.checked);
+    });
+
 </script>
 @endsection

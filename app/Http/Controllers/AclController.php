@@ -33,23 +33,34 @@ class AclController extends Controller
     }
 
     /********************************************
-    ## CreateRoleType
+    ## CreateRoleAndPermissionType
      *********************************************/
-    public function CreateRoleType()
+    public function CreateRoleAndPermissionType(Request $request)
     {
-        /*$data['page_title'] = $this->page_title;
-        return view('acl.settings..create-role-type',$data);*/
-        $users = \App\User::role('root')->get();
+        $v = $request->validate([
+            'add_name' => 'required',
+            'add_type' => 'required',
+        ]);
 
+        try{
 
-        //$user->givePermissionTo(\Request::route()->getName());
+            if($request->input('add_type')=='role'){
+                Role::findOrCreate(($request->input('add_name')));
+                $message ="Role Has been added";
+            }elseif ($request->input('add_type')=='permission'){
+                Permission::findOrCreate(($request->input('add_name')));
+                $message ="Permission Has been added";
+            }else{
+                $message ="Invalid Request";
+            }
+            return redirect('/acl-settings')->with('message',$message);
 
-        ///$users = \App\User::permission('Role Type Create')->get();
-
-        var_dump($users);
-
-        echo "done";
-
+            var_dump(Role::findOrCreate(($request->input('add_name'))));
+        }catch (\Exception $e) {
+            $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
+            \App\System::ErrorLogWrite($message);
+            return redirect('/acl-settings')->with('errormessage',"Something is wrong!");
+        }
 
     }
 

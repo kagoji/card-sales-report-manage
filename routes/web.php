@@ -37,19 +37,43 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
     Route::post('/me/profile/update',array('as'=>'Profile Update' , 'uses' =>'AdminController@ProfileUpdate'));
     Route::post('/me/profile/image/update',array('as'=>'Profile Image Update' , 'uses' =>'AdminController@ProfileImageUpdate'));
     Route::post('/me/change/password',array('as'=>'User Change Password' , 'uses' =>'AdminController@UserChangePassword'));
-    #UserManagement
-    Route::get('/user/management',array('as'=>'User Management' , 'uses' =>'AdminController@UserManagement'));
-    #CreateUser
-    Route::post('/user/create',array('as'=>'Create User' , 'uses' =>'AdminController@CreateUser'));
-    #ChangeUserStatus
-    Route::get('/change/user/status/{user_id}/{status}',array('as'=>'Change User Status' , 'uses' =>'AdminController@changeUserStatus'));
+
 
 
     /*################
-    # ACL Settings
+    # Admin Auth
     ##################*/
 
-    Route::get('/acl-settings',array('as'=>'ACL Settings' , 'uses' =>'AclController@AclSettingsPage'));
+    Route::group(['middleware' => ['adminAuth_check']], function () {
+
+        /*################
+        # User Manage
+        ##################*/
+
+        #UserManagement
+        Route::get('/user/management',array('as'=>'User Management' , 'uses' =>'AdminController@UserManagement'));
+        #CreateUser
+        Route::post('/user/create',array('as'=>'Create User' , 'uses' =>'AdminController@CreateUser'));
+        #ChangeUserStatus
+        Route::get('/change/user/status/{user_id}/{status}',array('as'=>'Change User Status' , 'uses' =>'AdminController@changeUserStatus'));
+        #UserDelete
+        Route::get('/user/delete/{user_id}',array('as'=>'User Delete' , 'uses' =>'AdminController@UserInfoDelete'));
+
+        #UpdateUser
+        Route::post('/user/{user_id}/update',array('as'=>'Update User' , 'uses' =>'AdminController@UpdateUserInfo'));
+
+
+        /*################
+        # ACL Settings
+        ##################*/
+
+        Route::get('/acl-settings',array('as'=>'ACL Settings' , 'uses' =>'AclController@AclSettingsPage'));
+        Route::post('/acl-settings',array('as'=>'ACL Settings' , 'uses' =>'AclController@CreateRoleAndPermissionType'));
+
+    });
+
+
+
 
     #RoleType
     Route::get('/role-type/create',array('as'=>'Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
@@ -78,69 +102,66 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
     Route::group(['middleware' => ['acl_check']], function () {
         Route::group(['prefix' => 'sales'], function () {
 
-            Route::get('report',array('as'=>'Sales Dashboard' , 'uses' =>'AdminController@DashboardPage'));
-
             #TaskQueue
-            Route::get('/task-queue/view',array('as'=>'Task Queue View' , 'uses' =>'AdminController@TaskQueueView'));
+            Route::get('/task-queue/view',array('as'=>'Sales Task Queue View' , 'uses' =>'AdminController@TaskQueueView'));
 
             #ReportHistory
-            Route::get('/report-history/view',array('as'=>'Report History View' , 'uses' =>'SalesReportController@ReportHistoryView'));
-            Route::post('/report-history/view',array('as'=>'Report History View' , 'uses' =>'SalesReportController@ReportHistoryChangeRequest'));
-            Route::get('/report-history/ajax/view',array('as'=>'Report History View Ajax' , 'uses' =>'SalesReportController@ReportHistoryAjaxLoad'));
+            Route::get('/report-history/view',array('as'=>'Sales Report History View' , 'uses' =>'SalesReportController@ReportHistoryView'));
+            Route::post('/report-history/view',array('as'=>'Sales Report History View' , 'uses' =>'SalesReportController@ReportHistoryChangeRequest'));
+            Route::get('/report-history/ajax/view',array('as'=>'Sales Report History View' , 'uses' =>'SalesReportController@ReportHistoryAjaxLoad'));
 
             #SalesCommission
             Route::get('/settings-commission',array('as'=>'Sales Settings Commission' , 'uses' =>'SalesSettingsController@CommissionSettingsPage'));
             Route::post('/settings-commission',array('as'=>'Sales Settings Commission' , 'uses' =>'SalesSettingsController@CommissionSettingsChangeRequest'));
-            Route::get('/settings-commission/ajax/view',array('as'=>'Sales Settings Commission Ajax' , 'uses' =>'SalesSettingsController@CommissionSettingsAjaxLoad'));
+            Route::get('/settings-commission/ajax/view',array('as'=>'Sales Settings Commission' , 'uses' =>'SalesSettingsController@CommissionSettingsAjaxLoad'));
 
             #SalesConfig
             Route::get('/settings-config-sales',array('as'=>'Sales Config Settings' , 'uses' =>'SalesSettingsController@SalesConfigSettingsPage'));
             Route::post('/settings-config-sales',array('as'=>'Sales Config Settings' , 'uses' =>'SalesSettingsController@SalesConfigSettingsChangeRequest'));
-            Route::get('/settings-config-sales/ajax/view',array('as'=>'Sales Config Settings Ajax' , 'uses' =>'SalesSettingsController@SalesConfigSettingsAjaxLoad'));
+            Route::get('/settings-config-sales/ajax/view',array('as'=>'Sales Config Settings' , 'uses' =>'SalesSettingsController@SalesConfigSettingsAjaxLoad'));
 
 
             #SalesZone
             Route::get('/settings-zone',array('as'=>'Sales Zone Settings' , 'uses' =>'SalesSettingsController@SalesZoneSettingsPage'));
             Route::post('/settings-zone',array('as'=>'Sales Zone Settings' , 'uses' =>'SalesSettingsController@SalesZoneSettingsChangeRequest'));
-            Route::get('/settings-zone/ajax/view',array('as'=>'Sales Zone Settings Ajax' , 'uses' =>'SalesSettingsController@SalesZoneSettingsAjaxLoad'));
+            Route::get('/settings-zone/ajax/view',array('as'=>'Sales Zone Settings' , 'uses' =>'SalesSettingsController@SalesZoneSettingsAjaxLoad'));
 
             #SalesReportSettings
             Route::get('/settings-sales-report',array('as'=>'Sales Report Settings' , 'uses' =>'SalesSettingsController@SalesReportSettingsPage'));
             Route::post('/settings-sales-report',array('as'=>'Sales Report Settings' , 'uses' =>'SalesSettingsController@SalesReportSettingsChangeRequest'));
-            Route::get('/settings-sales-report/ajax/view',array('as'=>'Sales Report Settings Ajax' , 'uses' =>'SalesSettingsController@SalesReportSettingsAjaxLoad'));
+            Route::get('/settings-sales-report/ajax/view',array('as'=>'Sales Report Settings' , 'uses' =>'SalesSettingsController@SalesReportSettingsAjaxLoad'));
 
 
             #SalesPerson
             Route::get('/settings-person-sales',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsPage'));
             Route::post('/settings-person-sales',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsChangeRequest'));
-            Route::get('/settings-person-sales/ajax/view',array('as'=>'Sales Person Settings Ajax' , 'uses' =>'SalesSettingsController@SalesPersonSettingsAjaxLoad'));
+            Route::get('/settings-person-sales/ajax/view',array('as'=>'Sales Person Settings' , 'uses' =>'SalesSettingsController@SalesPersonSettingsAjaxLoad'));
 
 
             #SalesPersonMeta
             Route::get('/settings-person-sales-observation',array('as'=>'Sales Person Observation Settings' , 'uses' =>'SalesSettingsController@SalesPersonObservationSettingsPage'));
             Route::post('/settings-person-sales-observation',array('as'=>'Sales Person Observation Settings' , 'uses' =>'SalesSettingsController@SalesPersonObservationSettingsChangeRequest'));
-            Route::get('/settings-person-sales-observation/ajax/view',array('as'=>'Sales Person Observation Settings Ajax' , 'uses' =>'SalesSettingsController@SalesPersonObservationSettingsAjaxLoad'));
+            Route::get('/settings-person-sales-observation/ajax/view',array('as'=>'Sales Person Observation Settings' , 'uses' =>'SalesSettingsController@SalesPersonObservationSettingsAjaxLoad'));
 
             
             #CSV Upload
             Route::get('/settings-csv-sales',array('as'=>'Sales CSV Upload Settings' , 'uses' =>'SalesSettingsController@SalesCsvUploadPage'));
             Route::post('/settings-csv-sales',array('as'=>'Sales CSV Upload Settings' , 'uses' =>'SalesSettingsController@SalesCsvUploadSubmit'));
 
-
+            #UserRole
             Route::get('/role-type/create',array('as'=>'Sales Role Type Create' , 'uses' =>'AclController@CreateRoleType'));
-            Route::get('report2',array('as'=>'Sales Dashboard 22' , 'uses' =>'AdminController@DashboardPage'));
 
             #ManageSalesReport
             Route::get('/manage-reports/zone-summary',array('as'=>'Manage Sales Zone Summary Report View' , 'uses' =>'SalesReportController@SalesZoneSummaryReportView'));
-            Route::get('/manage-reports/zone-summary/pdf',array('as'=>'Manage Sales Zone Summary Report PDF Download' , 'uses' =>'SalesReportController@SalesZoneSummaryReportPDFDownload'));
-            Route::get('/manage-reports/zone-summary/print',array('as'=>'Manage Sales Zone Summary Report Print' , 'uses' =>'SalesReportController@SalesZoneSummaryReportPrint'));
+            Route::get('/manage-reports/zone-summary/pdf',array('as'=>'Manage Sales Zone Summary Report View', 'uses' =>'SalesReportController@SalesZoneSummaryReportPDFDownload'));
+            Route::get('/manage-reports/zone-summary/print',array('as'=>'Manage Sales Zone Summary Report View', 'uses' =>'SalesReportController@SalesZoneSummaryReportPrint'));
 
             #ManageIndividualReport
             Route::get('/manage-reports/individual-summary',array('as'=>'Manage Sales Individual Summary Report View' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportView'));
-            Route::get('/manage-reports/individual-summary/pdf',array('as'=>'Manage Sales Individual Summary Report PDF Download' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportPDFDownload'));
-            Route::get('/manage-reports/individual-summary/print',array('as'=>'Manage Sales Individual Summary Report Print' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportPrint'));
+            Route::get('/manage-reports/individual-summary/pdf',array('as'=>'Manage Sales Individual Summary Report View' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportPDFDownload'));
+            Route::get('/manage-reports/individual-summary/print',array('as'=>'Manage Sales Individual Summary Report View' , 'uses' =>'SalesReportController@SalesIndividualSummaryReportPrint'));
 
-            Route::post('/manage-reports/individual-summary',array('as'=>'Manage Sales All Individual Summary Report PDF Download' , 'uses' =>'SalesReportController@SalesAllIndividualSummaryReportPDFDownload'));
+            Route::post('/manage-reports/individual-summary',array('as'=>'Manage Sales All Individual Summary Report PDF Download', 'uses' =>'SalesReportController@SalesAllIndividualSummaryReportPDFDownload'));
 
 
         });
@@ -245,7 +266,38 @@ Route::get('/acl-check',function(){
 
     //var_dump(Permission::all());
 
-    echo \Hash::make('1234');
+    //echo \Hash::make('1234');
+
+    //var_dump(\App\System::GetAllRouteNameListWithPrefix('Sales'));
+
+    //$user_permission = \DB::table('role_has_permissions')
+
+    /*#AddRoleandPermission
+    $role = Role::findOrCreate('admin');
+    $user = \App\User::where('id',3)->first();
+    $user->assignRole($role);
+    $user->givePermissionTo('Sales Task Queue View');*/
+
+    /*$user = \App\User::where('id',3)->first();
+    $user->revokePermissionTo('Sales Task Queue View');
+
+    var_dump($user);
+
+
+
+        if( (!(\Auth::check())  && !isset(\Auth::user()->user_type)) || (\Auth::user()->user_type != "admin" && \Auth::user()->user_type != "root" ))
+            echo \Auth::user()->user_type;
+        else echo "Not";*/
+
+    #AddRoleandPermission
+    //$role = Role::findOrCreate('admin');
+    $user = \App\User::where('id',11)->first();
+    //$user->assignRole($role);
+    //$user->givePermissionTo('Sales Task Queue View');
+
+    ///var_dump($user->givePermissionTo('Sales Task Queue View'));
+
+
 
 
 });

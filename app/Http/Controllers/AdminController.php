@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\System;
 use Illuminate\Http\Request;
 
 use Validator;
@@ -197,15 +198,29 @@ class AdminController extends Controller
             } else {
                 $tab = 'create_user';
             }
+
+            #EditUser
+            if (isset($_REQUEST['action']) && isset($_REQUEST['user_id']) && !empty($_REQUEST['user_id'])) {
+                $data['edit_user_info'] = \App\User::where('id', $_REQUEST['user_id'])->first();
+
+                if (empty($data['edit_user_info'])) {
+                    \Session::flash('errormessage', 'Invalid User ID');
+                    $tab = 'create_user';
+                }
+
+            }
+
             $data['tab'] = $tab;
             $data['user_info'] = \DB::table('users')->get();
             $data['block_users'] = \DB::table('users')->where('status','deactivate')->get();
-            $data['permission_list'] = Permission::all();
-            $data['route_list'] = \App\System::GetAllRouteNameListWithPrefix('sales');
+            $data['permission_list'] = \DB::table('permissions')->get();
+            $data['role_list'] = \DB::table('roles')->get();
 
             //var_dump($data['route_list']);
 
-            //$data['admins'] = \DB::table('users')->where('user_type','admin')->get();
+            $data['active_users'] = \DB::table('users')->where('status','active')->get();
+
+            //var_dump($data['active_users']);
             return view('user-profile.user-management',$data);
     }
     /**
@@ -217,58 +232,121 @@ class AdminController extends Controller
      */
     public function CreateUser(Request $request)
     {
-        if ((\Auth::user()->user_type=="admin")) {
-            $v = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email|unique:users',
-                'user_mobile' => 'required',
-                'user_type' => 'required',
-                'user_role' => 'required',
-                'password' => 'required',
-                'confirm_password' => 'required',
-            ]);
-            if ($v->fails()) {
-                return redirect()->back()->withErrors($v)->withInput();
-            }
-            if ($request->input('password') == $request->input('confirm_password')) {
-                $now=date('Y-m-d H:i:s');
-                $slug=explode(' ', strtolower($request->input('name')));
-                $name_slug=implode('.', $slug);
-                if (!empty($request->file('image_url'))) {
-                    $image = $request->file('image_url');
-                    $img_location = $image->getRealPath();
-                    $img_ext = $image->getClientOriginalExtension();
-                    $user_profile_image = \App\Admin::UserImageUpload($img_location, $request->input('email'), $img_ext);
-                } else {
-                    $user_profile_image='';
-                }
-                $user_insert_data=array(
-                    'name' => ucwords($request->input('name')),
-                    'name_slug' => $name_slug,
-                    'user_type' => $request->input('user_type'),
-                    'user_role' => $request->input('user_role'),
-                    'email' => $request->input('email'),
-                    'user_mobile' => $request->input('user_mobile'),
-                    'password' => bcrypt($request->input('password')),
-                    'user_profile_image' => $user_profile_image,
-                    'login_status' => 0,
-                    'status' => "deactivate",
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                );
-                try {
-                    \DB::table('users')->insert($user_insert_data);
-                    return redirect('admin/user/management')->with('message',"User Account Created Successfully !");
-                } catch(\Exception $e) {
-                    $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
-                    return redirect('admin/user/management')->with('errormessage',"User Already Exist !");
-                }
-            } else {
-                return redirect('admin/user/management')->with('errormessage',"Password Does Not Matched");
-            }
+        $v = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'user_type' => 'required',
+            'password' => 'required',
+            'confirm_password' => 'required|same:password',
+        ]);
+
+        $now=date('Y-m-d H:i:s');
+
+        if (!empty($request->file('image_url'))) {
+            $image = $request->file('image_url');
+            $img_location = $image->getRealPath();
+            $img_ext = $image->getClientOriginalExtension();
+            $user_profile_image = \App\User::UserImageUpload($img_location, $request->input('email'), $img_ext);
         } else {
-            return redirect('admin/dashboard')->with('errormessage',"Request Wrong Url !");
+            $user_profile_image='';
         }
+
+
+        $user_insert_data=array(
+            'name' => ucwords($request->input('name')),
+            'user_type' => $request->input('user_type'),
+            'email' => $request->input('email'),
+            'user_mobile' => $request->input('user_mobile'),
+            'user_permission' => !empty($request->input('permission'))?implode(',',$request->input('permission')):'',
+            'password' => bcrypt($request->input('password')),
+            'user_profile_image' => $user_profile_image,
+            'login_status' => 0,
+            'status' => "active",
+            'created_at' => $now,
+            'updated_at' => $now
+        );
+
+
+        try {
+
+           $user_id = \App\User::insertGetId($user_insert_data);
+           $get_permission= \App\System::RoleCreateAndGivenPermission($user_id,$user_insert_data['user_type'],$request->input('permission'));
+
+           return redirect('/user/management')->with('message',"User Account Created Successfully !");
+
+        } catch(\Exception $e) {
+            $message = "Message : ".$e->getMessage().", File : ".$e->getFile().", Line : ".$e->getLine();
+            \App\System::ErrorLogWrite($message);
+            return redirect('/user/management')->with('errormessage',$message);
+        }
+
+
+    }
+
+
+    public function UpdateUserInfo(Request $request, $user_id)
+    {
+
+        $v = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'user_type' => 'required',
+        ]);
+
+        try {
+
+            $now = date('Y-m-d H:i:s');
+
+            $user_info = \App\User::where('id',$user_id)->first();
+
+            if(!isset($user_info->id))
+                throw new \Exception("Invalid User ID");
+
+            if (!empty($request->file('image_url'))) {
+                $image = $request->file('image_url');
+                $img_location = $image->getRealPath();
+                $img_ext = $image->getClientOriginalExtension();
+                $user_profile_image = \App\User::UserImageUpload($img_location, $request->input('email'), $img_ext);
+                $user_update_data['user_profile_image'] = $user_profile_image;
+            }
+
+            $user_update_data['name'] = ucwords($request->input('name'));
+            $user_update_data['user_type'] = $request->input('user_type');
+            $user_update_data['email'] = $request->input('email');
+            $user_update_data['user_mobile'] = $request->input('user_mobile');
+            $user_update_data['user_permission']= !empty($request->input('permission'))?implode(',',$request->input('permission')):'';
+
+            #Permission
+            $old_permission = (isset($user_info->user_permission) && !empty($user_info->user_permission))? explode(',',$user_info->user_permission):array();
+            $new_permission = !empty($request->input('permission'))?$request->input('permission'):array();
+
+            #Role
+            $old_role = (isset($user_info->user_type) && !empty($user_info->user_type))? $user_info->user_type:'';
+            $new_role = $request->input('user_type');
+
+            $user_update = \App\User::updateOrCreate(
+                [
+                    'id' => $user_id,
+                ],
+                $user_update_data
+            );
+
+
+            #updateUserPermission
+            $role_change = \App\System::ACLChangeRole($user_id,$old_role,$new_role);
+            $permission_change = \App\System::ACLChangeChangePermission($user_id,$old_permission,$new_permission);
+
+
+            \App\System::EventLogWrite('update,users', json_encode($user_update));
+            return redirect('/user/management?action=edit&tab=edit_user&user_id='.$user_id)->with('message', 'User Info Updated Successfully');
+
+        } catch (\Exception $e) {
+            $message = "Message : " . $e->getMessage() . ", File : " . $e->getFile() . ", Line : " . $e->getLine();
+            \App\System::ErrorLogWrite($message);
+            return redirect('/user/management?action=edit&tab=edit_user&user_id='.$user_id)->with('errormessage', $message);
+        }
+
+
     }
 
     /**
@@ -295,6 +373,18 @@ class AdminController extends Controller
         }
     }
 
+    public function UserInfoDelete($user_id)
+    {
+        $delete = \App\User::where('id', $user_id)->delete();
+        if ($delete) {
+            \App\System::EventLogWrite('delete,Users|User delete successfully.', $user_id);
+            echo 'User delete successfully.';
+        } else {
+            \App\System::EventLogWrite('delete,Users|User not delete.', $user_id);
+            echo 'User Deleted successfully.';
+        }
+    }
+
     /**********************************************************
     ## TaskQueueView
      *************************************************************/
@@ -310,6 +400,7 @@ class AdminController extends Controller
 
         $data['page_title'] = $this->page_title;
         return \View::make('task.task-queue-view',$data);
+
     }
 
     /********************************************

@@ -18,15 +18,20 @@ class User extends Authenticatable
      *
      * @var array
      */
+    protected $table = 'users';
     protected $fillable = [
         'name',
         'email ',
-        'email_verified_at',
         'user_mobile',
+        'user_type',
+        'user_permission',
         'user_profile_image',
         'login_status',
         'status',
         'last_login',
+    ];
+    protected $hidden = [
+        'password', 'remember_token',
     ];
 
     public static function LogInStatusUpdate($status)

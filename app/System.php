@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 /*******************************
 #
@@ -880,12 +882,118 @@ class System extends Model
 
         foreach ($route_list as $route_name){
             if((strpos(strtolower($route_name),strtolower($prefix))!== false )){
-                $list[]= $route_name;
+
+                if(!in_array($route_name,$list))
+                    $list[]= $route_name;
             }
         }
 
         return $list;
     }
+
+    /**********************************************************
+    ## RoleCreateAndGivenPermission
+     *************************************************************/
+
+    public static function RoleCreateAndGivenPermission($user_id,$role,$permission_list){
+
+        if(count($permission_list)>0){
+            #Add user RoleandPermission
+            $role = Role::findOrCreate($role);
+            $user = \App\User::where('id',$user_id)->first();
+            $user->assignRole($role);
+
+            foreach ($permission_list as $key =>$permission)
+                $user->givePermissionTo($permission);
+
+            return 1;
+
+        }else return 0;
+
+    }
+
+
+    /**********************************************************
+    ## ACLChangeRole
+     *************************************************************/
+
+    public static function ACLChangeRole($user_id,$old_role,$new_role){
+
+        $status='';
+        if(!empty($old_role)&&!empty($new_role)&&($old_role==$new_role)){
+            $status='no_change';
+        }else{
+            $status='change';
+        }
+        if(!empty($status)&&($status=='change')){
+            $role = Role::findOrCreate($new_role);
+            $user = \App\User::where('id',$user_id)->first();
+            $user->removeRole($old_role);
+            $user->assignRole($role);
+
+            return 2;
+        }
+
+        return 1;
+    }
+
+
+    /**********************************************************
+    ## ACLChangeRole
+     *************************************************************/
+
+    public static function ACLChangeChangePermission($user_id,$old_permission,$new_permission){
+
+        $all_permit = array();
+
+
+        if(count($old_permission)>=count($new_permission)){
+            foreach ($old_permission as $key => $list){
+                $get_permit=array();
+                if(in_array($list,$new_permission)){
+                    $get_permit['name']=$list;
+                    $get_permit['status']='no_change';
+                }else{
+                    $get_permit['name']=$list;
+                    $get_permit['status']='remove';
+                }
+                $all_permit[]=$get_permit;
+            }
+        }else{
+            foreach ($new_permission as $key => $list){
+                $get_permit=array();
+
+                if(in_array($list,$old_permission)){
+                    $get_permit['name']=$list;
+                    $get_permit['status']='no_change';
+                }else{
+                    $get_permit['name']=$list;
+                    $get_permit['status']='add';
+                }
+                $all_permit[]=$get_permit;
+            }
+        }
+
+        $user = \App\User::where('id',$user_id)->first();
+
+        if(!empty($all_permit)){
+            foreach ($all_permit as $key => $permit){
+                if($permit['status']=='add'){
+                    $user->givePermissionTo($permit['name']);
+                }elseif ($permit['status']=='remove'){
+                    $user->revokePermissionTo($permit['name']);
+                }else{
+
+                }
+            }
+        }
+
+
+        return "Done";
+    }
+
+
+
 
 ####################### End #####################################
 }

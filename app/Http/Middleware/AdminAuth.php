@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class AclCheck
+class AdminAuth
 {
     /**
      * Handle an incoming request.
@@ -16,12 +16,11 @@ class AclCheck
     public function handle($request, Closure $next)
     {
 
-        $route_name = \Request::route()->getName();
-        if(!(\Auth::check()) || !(\Auth::user()->can($route_name)))
+        if( (!(\Auth::check())  && !isset(\Auth::user()->user_type)) || (\Auth::user()->user_type != "admin" && \Auth::user()->user_type != "root" ))
         {
             if ($request->ajax())
             {
-                return response('You are not authorized user..', 401);
+                return response('Unauthorized.', 401);
             }
             else
             {
@@ -30,7 +29,6 @@ class AclCheck
                 return redirect()->guest('/dashboard'); /* default => 'auth/login' */
             }
         }
-
         return $next($request);
     }
 }
