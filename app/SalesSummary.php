@@ -60,7 +60,9 @@ class SalesSummary extends Model
                 if($report->report_year != $history_year || $report->report_month !=$history_month){
                     $history_pad_month = str_pad($report->report_month,2,"0",STR_PAD_LEFT);
                     $month = "2019-$history_pad_month-27";
-                    $card_grp[]= date('M',strtotime($month)).": ".$report->basic_card_count;
+
+                    if($report->basic_card_count>0)
+                        $card_grp[]= date('M',strtotime($month)).": ".$report->basic_card_count;
                 }
             }
             $last_card_report = count($card_grp)>0? implode($card_grp,','):'';

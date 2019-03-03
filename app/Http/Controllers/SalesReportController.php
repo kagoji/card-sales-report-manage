@@ -53,7 +53,14 @@ class SalesReportController extends Controller
             echo "OK";
         }
 
-        if($data['action']!='delete')
+        if($data['action']=='lock' || $data['action']=='un-lock'){
+            $data['history_id'] = isset($_REQUEST['history_id'])? $_REQUEST['history_id']:'';
+            $status = isset($_REQUEST['action'])&&($_REQUEST['action']=='lock')? 1:0;
+            $person_delete = \App\ReportHistory::where('id',$data['history_id'])->update(['history_lock_status'=>$status,'updated_at'=>date('Y-m-d H:i:s')]);
+            echo "Change";
+        }
+
+        if($data['action']!='delete' || $data['action']!='lock' || $data['action'] !='un-lock')
             return \View::make('report-history.ajax-report-history',$data);
 
 
@@ -123,13 +130,9 @@ class SalesReportController extends Controller
                     $update = \App\ReportHistory::updateOrCreate(['history_year'=>$history['history_year'],'history_month'=>$history['history_month']],$history);
                     $event_message = json_encode($update);
 
-                    if($update->wasRecentlyCreated){
+
                         \Event::fire(new SummaryReportGenerateEvent($event_data));
                         $message = "Report of ".$history['history_month'].",".$history['history_year']."is now Processing.";
-
-                    }else{
-                        $message = "Report of ".$history['history_month'].",".$history['history_year']." updated.";
-                    }
 
                 }else{
                     $event_message = "Report of Month:".$history['history_month'].", ".$history['history_year']." is locked and it can not be processed.";

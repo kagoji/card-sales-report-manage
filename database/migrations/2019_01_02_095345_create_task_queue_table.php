@@ -16,7 +16,7 @@ class CreateTaskQueueTable extends Migration
         Schema::defaultStringLength(191);
         Schema::create('task_queue', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('task_name');
+            $table->text('task_name');
             $table->integer('task_user_id');
             $table->string('task_user_name')->nullable();
             $table->timestamp('task_start_at')->nullable();

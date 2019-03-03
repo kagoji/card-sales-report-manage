@@ -317,7 +317,14 @@ class SalesSettingsController extends Controller
             echo "OK";
         }
 
-        if($data['action']!='delete')
+        if($data['action']=='block' || $data['action']=='active'){
+            $data['person_id'] = isset($_REQUEST['person_id'])? $_REQUEST['person_id']:'';
+            $status = isset($_REQUEST['action'])&&($_REQUEST['action']=='block')? 0:1;
+            $person_delete = \App\SalesPerson::where('id',$data['person_id'])->update(['sales_persons_status'=>$status,'updated_at'=>date('Y-m-d H:i:s')]);
+            echo "Change";
+        }
+
+        if($data['action']!='delete' || $data['action'] !='block' || $data['action'] !='active')
             return \View::make('sales-settings.ajax-sales-person',$data);
 
 
@@ -591,6 +598,8 @@ class SalesSettingsController extends Controller
             $person_delete = \App\SalesPersonMeta::where('id',$data['person_observation_id'])->delete();
             echo "OK";
         }
+
+
 
         if($data['action']!='delete')
             return \View::make('sales-settings.ajax-sales-person-observation',$data);

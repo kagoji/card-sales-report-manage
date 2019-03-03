@@ -133,16 +133,17 @@
                                 <p> Observation Period: <?php echo (isset($sales_person_summary->report_observation_status)&&($sales_person_summary->report_observation_status==1))?'YES':'NO'; ?> </p>
                                 <p> Sales Code:<?php echo isset($sales_person_summary->report_ExecutiveCode)?$sales_person_summary->report_ExecutiveCode:''; ?> </p> <br/>
 
-                                <table style="margin-bottom: 55px; font-weight: bold">
-                                    <?php if(isset($last_card_report) && !empty($last_card_report)){ ?>
+                                <table style="margin-bottom: 40px; font-weight: bold">
+                                    <?php if (isset($last_card_report) && !empty($last_card_report)) { ?>
                                     <tr>
                                         <td>Card Sale (6 Months)</td>
-                                        <td><?php  echo isset($last_card_report)?$last_card_report:''; ?></td>
+                                        <td><?php echo isset($last_card_report) ? $last_card_report : ''; ?></td>
                                     </tr>
-                                    <?php }?>
+                                    <?php } ?>
                                     <tr>
-                                        <td>Packages (<?php echo $sales_person_summary->report_year;?>)</td>
-                                        <td><?php  echo isset($observation_status['observation_count'])? str_pad($observation_status['observation_count'],2,'0',STR_PAD_LEFT):''; ?>, Month: <?php  echo isset($observation_status['last_observation'])?$observation_status['last_observation']:''; ?></td>
+                                        <td>Packages (<?php echo $sales_person_summary->report_year; ?>)</td>
+                                        <td><?php echo isset($observation_status['observation_count']) && ($observation_status['observation_count']>0) ? str_pad($observation_status['observation_count'], 2, '0', STR_PAD_LEFT) : ''; ?>
+                                            Month: <?php echo isset($observation_status['last_observation']) ? ','. $observation_status['last_observation'] : ''; ?></td>
                                     </tr>
                                 </table>
 

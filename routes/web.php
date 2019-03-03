@@ -17,6 +17,9 @@ Route::post('/auth',array('as'=>'Sign in' , 'uses' =>'SystemAuthController@authP
 Route::post('auth/registration',array('as'=>'Registration' , 'uses' =>'SystemAuthController@authRegistration'));
 Route::post('auth/forget/password',array('as'=>'Forgot Password' , 'uses' =>'SystemAuthController@authForgotPasswordConfirm'));
 
+#PDF VIEW
+Route::get('/PDF/view',array('as'=>'PDF View' , 'uses' =>'AdminController@DaashboradPDFView'));
+
 
 Route::group(['middleware' => ['systemAuth_check']], function () {
 
@@ -94,6 +97,7 @@ Route::group(['middleware' => ['systemAuth_check']], function () {
     ##################*/
 
     Route::get('/dashboard',array('as'=>'Dashboard' , 'uses' =>'AdminController@DashboardPage'));
+
 
     /*################
     # Sales
@@ -472,8 +476,8 @@ Route::get('/all-downloand',function () {
 
     return \View::make('summary-reports.pdf.zone-individual-summary-pdf',$data);*/
 
-
-    echo storage_path()."And";
+    $file_name="remmm";
+    echo url('/pdf-dwonload').$file_name;
 
 
 

@@ -467,12 +467,17 @@ class AdminController extends Controller
     }
 
     /********************************************
-    ## Promo Pack Create View
+    ## DaashboradPDFView
      *********************************************/
-    public function promoPackCreate()
+    public function DaashboradPDFView()
     {
         $data['page_title'] = $this->page_title;
-        return view('promoPack.promoPack-create',$data);
+
+        if(isset($_REQUEST['file-name']) && !empty($_REQUEST['file-name'])){
+            $data['file_name'] = $_REQUEST['file-name'];
+            return view('task.task-pdf-view',$data);
+        }else return \Redirect::to('/sales/task-queue/view')->with('errormessage','PDF is not available');
+
     }
 
     /********************************************

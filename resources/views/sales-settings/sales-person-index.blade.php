@@ -57,6 +57,7 @@
                                 <th>Account No.</th>
                                 <th>Target</th>
                                 <th>Basic</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -77,9 +78,15 @@
                                         <td>{{ $SalesPerson->sales_persons_account_no }}</td>
                                         <td>{{ $SalesPerson->sales_persons_target }}</td>
                                         <td>{{ $SalesPerson->sales_persons_basic }}</td>
+                                        <td>{{ ($SalesPerson->sales_persons_status==1)?'Active':'In-active' }}</td>
                                         <td style="width:18%">
                                             <div class="btn-group">
-                                                <a href="#" class="btn btn-xs btn-info tooltips sales_person"  data-action="edit" data-person_id="{{$SalesPerson->id}}" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil fa fa-white"></i></a>
+                                                <a  class="btn btn-xs btn-info tooltips sales_person"  data-action="edit" data-person_id="{{$SalesPerson->id}}" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil fa fa-white"></i></a>
+                                                @if($SalesPerson->sales_persons_status==1)
+                                                <a  class="btn btn-xs btn-danger tooltips sales_person_action"  data-action="block" data-person_id="{{$SalesPerson->id}}" data-placement="top" data-original-title="Block"><i class="clip-user-block fa fa-white"></i></a>
+                                                @else
+                                                    <a  class="btn btn-xs btn-success tooltips sales_person_action"  data-action="active" data-person_id="{{$SalesPerson->id}}" data-placement="top" data-original-title="Active"><i class="clip-user-plus fa fa-white"></i></a>
+                                                @endif
                                                 <a  class="btn btn-xs btn-bricky tooltips sales_person_delete" data-person_id="{{$SalesPerson->id}}" data-placement="top" data-original-title="Remove"><i class="fa fa-times fa fa-white"></i></a>
                                             </div>
                                         </td>
@@ -87,7 +94,7 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="11">
+                                    <td colspan="12">
                                         <div class="alert alert-success" role="alert">
                                             <h4>No Data Available !</h4>
                                         </div>
@@ -96,8 +103,9 @@
                             @endif
                             </tbody>
                         </table>
-                        {{isset($pagination)?$pagination:''}}
+
                     </div>
+                    {{isset($pagination)?$pagination:''}}
                 </div>
             </div>
         </div>
@@ -143,6 +151,45 @@
                                 $.ajax({
                                     type: 'GET',
                                     url: site_url+'/sales/settings-person-sales/ajax/view?action=delete&person_id='+id,
+                                }).done(function(response){
+                                    bootbox.alert(response,
+                                        function(){
+                                            location.reload(true);
+                                        }
+                                    );
+                                }).fail(function(response){
+                                    bootbox.alert(response);
+                                })
+                            }
+                        }
+                    }
+                });
+            });
+
+
+            //Status Change
+            $('.sales_person_action').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('person_id');
+                var action = $(this).data('action');
+                bootbox.dialog({
+                    message: "Are you sure you want to Change Status ?",
+                    title: "<i class='fa fa-exchange'></i> Status Change !",
+                    buttons: {
+                        success: {
+                            label: "No",
+                            className: "btn-success btn-squared",
+                            callback: function() {
+                                $('.bootbox').modal('hide');
+                            }
+                        },
+                        danger: {
+                            label: "Change!",
+                            className: "btn-danger btn-squared",
+                            callback: function() {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: site_url+'/sales/settings-person-sales/ajax/view?action='+action+'&person_id='+id,
                                 }).done(function(response){
                                     bootbox.alert(response,
                                         function(){

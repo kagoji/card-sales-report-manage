@@ -76,11 +76,14 @@ class ZoneIndividualSummaryReportEventListener implements ShouldQueue
             $data['get_zone_data'] = $get_zone_data;
 
             $pdf = \PDF::loadView('summary-reports.pdf.zone-individual-summary-pdf',$data);
-            $pdf_path = storage_path().'/pdf-dwonload/'.time().'_'.$zone_info->zone_name.'_individual_detail_report.pdf';
+            $file_name = time().'_'.str_slug($zone_info->zone_name,'_').'_individual_detail_report.pdf';
+            $pdf_path = public_path().'/pdf-download/'.$file_name;
             $pdf->save($pdf_path);
 
+            $insert_html = '<a target="_blank" href="'.url('/PDF/view').'?file-name='.$file_name.'" class="btn btn-green tooltips" data-toggle1="tooltip" title="" data-original-title="All Individual Detail Report"><i class="clip-eye" aria-hidden="true"></i> | All Individual Report View</a>';
+
             #Task Update
-            \DB::table('task_queue')->where('id',$task_id)->update(['task_stop_at'=>date('Y-m-d H:i:s'),'task_status'=>2,'task_name'=>$pdf_path]);
+            \DB::table('task_queue')->where('id',$task_id)->update(['task_stop_at'=>date('Y-m-d H:i:s'),'task_status'=>2,'task_name'=>$insert_html]);
             $message = "Task ID: ".$task_id." | list data ".json_encode($get_zone_data);
             \App\System::CustomLogWritter("listenerlog","sales_zone_individual_summary_report_listener_log",$message);
 

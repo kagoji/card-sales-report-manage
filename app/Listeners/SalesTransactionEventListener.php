@@ -76,6 +76,7 @@ class SalesTransactionEventListener implements ShouldQueue
                         $insert = \App\SalesTransaction::updateOrCreate(
                             [
                                 'transaction_exp_id'=>$transaction_data['transaction_exp_id'],                                                                                'transaction_year'=>$transaction_data['transaction_year'],
+                                'transaction_year'=>$transaction_data['transaction_year'],                                                                                'transaction_year'=>$transaction_data['transaction_year'],
                                 'transaction_month'=>$transaction_data['transaction_month'],
                             ],$transaction_data);
 

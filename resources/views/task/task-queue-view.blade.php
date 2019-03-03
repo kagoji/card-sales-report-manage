@@ -30,14 +30,22 @@
                     <i class="clip-users-2"></i>
                     Sales Task Queue
                     <div class="panel-tools">
-                        <a class="btn btn-xs btn-link panel-collapse collapses" data-toggle="tooltip" data-placement="top" title="Show / Hide" href="#">
+                        <a class="btn btn-xs btn-link panel-collapse collapses" data-toggle="tooltip" data-placement="top" title="Show / Hide">
                         </a>
-                        <a class="btn btn-xs btn-link panel-close red-tooltip" data-toggle="tooltip" data-placement="top" title="Close" href="#">
+                        <a class="btn btn-xs btn-link panel-refresh" data-toggle="tooltip" data-placement="top" title="Reload" href="{{url('/sales/task-queue/view')}}">
+                            <i class="fa fa-refresh"></i>
+                        </a>
+                        <a class="btn btn-xs btn-link panel-close red-tooltip" data-toggle="tooltip" data-placement="top" title="Close" >
                             <i class="fa fa-times"></i>
                         </a>
                     </div>
                 </div>
                 <div class="panel-body">
+
+                    <div class="add_item pull-right" style="margin-bottom: 10px;">
+                        <a href="{{url('/sales/task-queue/view')}}" class="btn btn-primary"  data-toggle="tooltip" data-placement="top" title="Refresh"><i class="clip-refresh"></i>
+                            Refresh</a>
+                    </div>
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover" id="sample-table-1">
@@ -59,7 +67,8 @@
                                 @foreach ($task_list as $key => $task)
                                     <tr>
                                         <td>{{ ($key+1+($perPage*$page)) }}</td>
-                                        <td>{{ $task->task_name }}</td>
+                                        {{--<td>{{ $task->task_name }}</td>--}}
+                                        <td><?php echo $task->task_name; ?></td>
                                         <td>{{ $task->task_start_at}}</td>
                                         <td>{{ $task->task_stop_at }}</td>
                                         <td>

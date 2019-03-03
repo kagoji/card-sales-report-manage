@@ -85,12 +85,12 @@
                                                     <li>
                                                         @if($history->history_lock_status == 1)
                                                             <a class="status-change"
-                                                               data-publish-status="0" data-history_id="{{ $history->id}}" title="Click for un-lock">
+                                                               data-action="un-lock" data-history_id="{{ $history->id}}" title="Click for un-lock">
                                                                 <i class="fa fa-unlock"></i>Un Lock
                                                             </a>
                                                         @else
-                                                            <a class="status-change " title="Click for Lcck"
-                                                               data-publish-status="1" data-history_id="{{ $history->id}}">
+                                                            <a class="status-change" title="Click for Lcck"
+                                                               data-action="lock" data-history_id="{{ $history->id}}">
                                                                 <i class="fa fa-lock"></i> Lock
                                                             </a>
                                                         @endif
@@ -163,6 +163,44 @@
                                 $.ajax({
                                     type: 'GET',
                                     url: site_url+'/sales/report-history/ajax/view?action=delete&history_id='+history_id,
+                                }).done(function(response){
+                                    bootbox.alert(response,
+                                        function(){
+                                            location.reload(true);
+                                        }
+                                    );
+                                }).fail(function(response){
+                                    bootbox.alert(response);
+                                })
+                            }
+                        }
+                    }
+                });
+            });
+
+            //Status Change
+            $('.status-change').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('history_id');
+                var action = $(this).data('action');
+                bootbox.dialog({
+                    message: "Are you sure you want to Change Status ?",
+                    title: "<i class='fa fa-exchange'></i> Status Change !",
+                    buttons: {
+                        success: {
+                            label: "No",
+                            className: "btn-success btn-squared",
+                            callback: function() {
+                                $('.bootbox').modal('hide');
+                            }
+                        },
+                        danger: {
+                            label: "Change!",
+                            className: "btn-danger btn-squared",
+                            callback: function() {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: site_url+'/sales/report-history/ajax/view?action='+action+'&history_id='+id,
                                 }).done(function(response){
                                     bootbox.alert(response,
                                         function(){

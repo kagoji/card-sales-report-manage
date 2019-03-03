@@ -136,9 +136,8 @@
                         <?php } ?>
                         <tr>
                             <td>Packages (<?php echo $sales_person_summary->report_year; ?>)</td>
-                            <td><?php echo isset($observation_status['observation_count']) ? str_pad($observation_status['observation_count'], 2, '0', STR_PAD_LEFT) : ''; ?>
-                                ,
-                                Month: <?php echo isset($observation_status['last_observation']) ? $observation_status['last_observation'] : ''; ?></td>
+                            <td><?php echo isset($observation_status['observation_count']) && ($observation_status['observation_count']>0) ? str_pad($observation_status['observation_count'], 2, '0', STR_PAD_LEFT) : ''; ?>
+                                Month: <?php echo isset($observation_status['last_observation']) ? ','. $observation_status['last_observation'] : ''; ?></td>
                         </tr>
                     </table>
 
