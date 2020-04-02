@@ -3,3 +3,5 @@
 Step-1: Install/update laravel package
 ---------------------------------------
 >> composer update
+
+>> Sales salary project
